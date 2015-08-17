@@ -66,7 +66,7 @@ class Bootstrap {
         $length = COUNT($this->_url);
         
         if($length > 1){
-            if(!method_exists($this->_controller, $this->_url[0])){
+            if(!method_exists($this->_controller, $this->_url[1])){
                 $this->_error();
             }
         }

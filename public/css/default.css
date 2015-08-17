@@ -1,0 +1,141 @@
+@import url(./reset.css);
+
+body{
+    background: #FFF;
+    font: 13px/19px Tahoma, sans-serif; 
+    min-width: 980px;
+    padding: 20px;
+}
+b, strong{
+    font-weight: bold;
+}
+i{
+    font-style: italic;
+}
+a{
+    color: #e11842;
+    text-decoration: none;
+}
+a:hover{
+    text-decoration: underline;
+}
+section{
+    background: #ECF1F4;
+    border-radius: 10px;
+        -moz-border-radius: 10px;
+            -webkit-border-radius: 10px;
+    padding: 50px 10px 10px;
+    margin: 0 auto;
+}
+h1{
+    background: #9BADB8;
+    border-bottom: 1px solid #FFF;
+    border-radius: 10px 10px 0px 0px;
+    color: #FFF;
+    font-size: 19px;
+    height: 40px;
+    line-height: 40px;
+    padding: 0px 20px;
+    position: relative;
+    z-index: 2;
+}
+h1 + section{
+    margin-top: -40px;
+    position: relative;
+    z-index: 1;
+}
+table {
+    border-collapse: collapse;
+    margin: 20px auto;
+    width: 100%;
+}
+
+table, th, td {
+    border: 1px solid #d0d7df;
+}
+th{
+    background-color: #2a3940;
+    color: #FFF;
+}
+td{
+    background-color: #f4f6f6
+}
+
+th, td{
+    height: 30px;
+    line-height: 30px;
+    padding: 0px 10px;
+    text-align: left;
+}
+th{
+    border-bottom-color: #2a3940;
+    border-top-color: #2a3940;
+}
+th:first-child{
+    border-left: 1px solid #2a3940;
+}
+th:last-child{
+    border-right: 1px solid #2a3940;
+}
+
+th:first-child, 
+td:first-child, 
+th:last-child, 
+td:last-child{
+    text-align: center;
+}
+
+fieldset{
+    border: 1px solid #D0D7DF;
+    padding: 10px;
+} 
+
+form.searchForm input[type="text"]{
+    background-color: #FFF;
+    border: 1px solid #8195a0;
+    border-radius: 5px;
+        -moz-border-radius: 5px;
+            -webkit-border-radius: 5px;
+    float: left;    
+    height: 15px;
+    left: 0px;
+    line-height: 20px;
+    padding: 5px;
+    position: relative;
+    width: 600px;
+}
+
+form.searchForm input[type="submit"]{
+    background: transparent url(../img/search_btn.gif) left top no-repeat;
+    border-style: none;
+    cursor: pointer;
+    float: left;
+    height: 30px;
+    left: -27px;
+    position: relative;
+    top: -1px;
+    width: 30px;
+}
+form.searchForm input[type="submit"]:hover{
+    background-position-y: bottom;
+}    
+.clear{
+    clear: both;
+    float: none;
+    height: 1px;
+}
+form.searchForm b, form.searchForm select{
+    display: inline-block;
+    margin: 10px 0px 0px;
+}    
+form.searchForm b + select{
+    margin-left: 10px;
+}
+a.skype{
+    background: url(../img/skype.png) center left no-repeat;
+    background-size: 15px;
+    color: inherit;
+    display: block;
+    padding-left: 20px;
+    text-decoration: none;
+}
