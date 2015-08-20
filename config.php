@@ -9,3 +9,5 @@ define('DB_HOST', 'localhost');
 define('DB_NAME', 'management');
 define('DB_USER', 'root');
 define('DB_PASS', 'root');
+
+define("COUNT_ENTRIES_ON_PAGE", 3);

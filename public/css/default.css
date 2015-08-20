@@ -66,7 +66,6 @@ td{
 }
 
 th, td{
-    height: 30px;
     line-height: 30px;
     padding: 0px 10px;
     text-align: left;
@@ -186,8 +185,8 @@ a.skype{
     right: 0px;
 }
 .tableSubmit{
+    bottom: 11px;
     float: right;
-    position: relative;
-    right: 0px;
-    top: -25px;
+    position: absolute;
+    right: 10px;
 }

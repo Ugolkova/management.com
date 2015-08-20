@@ -43,6 +43,9 @@
                 </ul>
             </div>
             
+            <?php if( empty($this->users) ) : ?>
+                <p>There are no entries matching the criteria you selected.</p>
+            <?php else: ?>               
             <form action="<?php echo URL . "edit/" ?>" method="POST">
                 <table>
                     <thead>
@@ -57,27 +60,19 @@
                             <th><input type="checkbox" name="check_all" /></th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody>                       
+                        <?php foreach($this->users as $user): ?>
                         <tr>
-                            <td>1</td>
-                            <td><a href="<?php echo URL; ?>users/show/123" title="Tetiana Ugolkova">Tetiana Ugolkova</a></td>
-                            <td><a href="mailto:tugolkova@cogniance.com">tugolkova@cogniance.com</a></td>
-                            <td><a href="skype:ugolkova.t#call" class="skype">ugolkova.t</a></td>
-                            <td><a href="<?php echo URL ?>projects/Expensify" title="Expensify">Expensify</a></td>
-                            <td><a href="<?php echo URL; ?>users/show/123" title="Alexey Koval">Alexey Koval</a></td>
-                            <td><a href="<?php echo URL; ?>users/show/1234" title="Michael Goncharenko">Michael Goncharenko</a></td>
+                            <td><?php echo $user['user_id']; ?></td>
+                            <td><a href="<?php echo URL . "users/show/" . $user['user_id']; ?>" title="<?php echo $user['user_name']; ?>"><?php echo $user['user_name']; ?></a></td>
+                            <td><a href="<?php echo $user['user_email']; ?>"><?php echo $user['user_email']; ?></a></td>
+                            <td><a href="skype:<?php echo $user['user_skype']; ?>#call" class="skype"><?php echo $user['user_skype']; ?></a></td>
+                            <td><a href="<?php echo URL ?>projects/<?php echo $user['user_id']; ?>" title="Expensify">Expensify</a></td>
+                            <td><a href="<?php echo URL; ?>users/show/<?php echo $user['lm_id']; ?>" title="<?php echo $user['lm_name']; ?>"><?php echo $user['lm_name']; ?></a></td>
+                            <td><a href="<?php echo URL; ?>users/show/<?php echo $user['pm_id']; ?>" title="<?php echo $user['pm_name']; ?>"><?php echo $user['pm_name']; ?></a></td>
                             <td><input type="checkbox" name="ids[]" value="1" /></td>
                         </tr>
-                        <tr>
-                            <td>2</td>
-                            <td><a href="<?php echo URL; ?>users/show/123" title="Michael Goncharenkol">Michael Goncharenko</a></td>
-                            <td><a href="mailto:mgoncharenko@cogniance.com">mgoncharenko@cogniance.com</a></td>
-                            <td><a href="skype:mgoncharenko#call" class="skype">mgoncharenko</a></td>
-                            <td><a href="<?php echo URL ?>projects/Expensify" title="Expensify">Expensify</a></td>
-                            <td><a href="<?php echo URL; ?>users/show/123" title="Alexey Koval">Alexey Koval</a></td>
-                            <td><a href="<?php echo URL; ?>users/show/1234" title="Somebody Else">Somebody Else</a></td>
-                            <td><input type="checkbox" name="ids[]" value="1" /></td>
-                        </tr>
+                        <?php endforeach; ?>
                     </tbody>
                 </table>
                 
@@ -100,6 +95,7 @@
                     </select>    
                 </div>    
             </form>
+            <?php endif; ?>    
         </section>    
     </body>
 </html>
