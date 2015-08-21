@@ -11,7 +11,7 @@ class Users extends Controller {
         $this->full_list();
     }
     
-    function get_list( $param1 = null, $param2 = null, $param3 = null ){
+    function get_list( $param1 = null, $param2 = null ){
         $page = 1;
         $userType = null;
 
