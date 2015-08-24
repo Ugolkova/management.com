@@ -190,3 +190,44 @@ a.skype{
     position: absolute;
     right: 10px;
 }
+
+.publishForm p{
+    border-bottom: 1px solid #cdd3de;
+    border-top: 1px solid #FFF;
+    padding: 10px 0px;
+}
+.publishForm p:first-child{
+    border-top: none;
+}
+.publishForm p:last-child{
+    border-bottom: none;
+    text-align: right;
+}
+.publishForm label{
+    display: block;
+    font-weight: bold;
+}
+.publishForm label.required::before{
+    color: #e11842;
+    content: '*';
+    display: block;
+    float: left;
+    position: relative;
+    width: 10px;
+}
+.publishForm input[type="text"],
+.publishForm input[type="password"],
+.publishForm select,
+.publishForm textarea{
+    background: #ffffff url('../img/publish_input_background.png') no-repeat left top;
+    border: 1px solid #cdd7dd;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    margin: 2px 0;
+    padding: 4px;
+    width: 99%;
+}
+.publishForm input[type="submit"]{
+    margin-top: 10px;
+}

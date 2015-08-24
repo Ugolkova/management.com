@@ -1,7 +1,8 @@
 <?php
 
 // Use slash at the end
-define("URL", "http://management.com/");
+define("HOST", "management.com");
+define("URL", "http://" . HOST . "/");
 define("LIBS", "libs/");
 
 define('DB_TYPE', 'mysql');

@@ -11,17 +11,35 @@
             a{
                 color: #E8496A;
             }
-            a:first-child, a:last-child{
-                background-color: #E8496A;
-                color: #FFF;
-                padding: 2px 5px;
-            }
+            
+            .pagination a.first,
+            .pagination a.last,
+            .pagination a.prev,
+            .pagination a.next{
+                background-position: center top;
+                background-repeat: no-repeat;
+                height: 13px;
+                width: 13px;
+            }  
+            .pagination a.first{
+                background-image: url(public/img/pagination_first_button.gif);
+            }            
+            .pagination a.last{
+                background-image: url(public/img/pagination_last_button.gif);
+            }      
+            .pagination a.prev{
+                background-image: url(public/img/pagination_prev_button.gif);
+            }      
+            .pagination a.next{
+                background-image: url(public/img/pagination_next_button.gif);
+            }                  
         </style>
     </head>
     <body>
         <?php
             require_once 'libs/Pagination.php';
             $pagination = new Pagination();
+            echo $pagination->createLinks($_GET['page'], 'test.php?page=', 182);
         ?> 
     </body>
 </html>
