@@ -47,5 +47,9 @@ class Users_model extends Model {
         $usersArr = $this->db->select( $sql );        
         return $usersArr;
     }
+    
+    public function add(){
+        return $this->request->post('user_name', 'string');
+    }
 }
 

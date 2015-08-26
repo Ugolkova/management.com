@@ -68,7 +68,6 @@ class Request {
      * @return string | array
      */
     function post($name = null, $type = null){
-        echo "POST with name: " . $name . "<br />";
         $val = null;
         
         if(!empty($name) && isset($_POST[$name])){
