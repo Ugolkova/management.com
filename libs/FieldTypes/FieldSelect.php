@@ -3,6 +3,8 @@
 class FieldSelect extends FieldType {    
     function __construct() {
         parent::__construct();
+        
+        $this->_setOptions('Options', 'options', '', 'Use comma to separate items');
     }
     
     /**

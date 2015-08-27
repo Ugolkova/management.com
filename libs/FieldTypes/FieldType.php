@@ -1,9 +1,31 @@
 <?php
 
 abstract class FieldType {
+    private $_options = [];
     
     function __construct() {
-        $this->_options = array("default", "label", "name", "owner_id");
+        
+    }
+
+    /**
+     * Set field options
+     * 
+     * @param string $label
+     * @param string $short_name
+     * @param string $value
+     * @param string $instruction
+     */
+    protected function _setOptions($label, $short_name, $value = '', $instruction = ''){
+        $this->_options[] = array(
+            'label'       => $label,
+            'short_name'  => $short_name,
+            'value'       => $value,
+            'instruction' => $instruction
+        );
+    }    
+    
+    public function getOptions(){
+        return $this->_options;
     }
     
     abstract function render($data);

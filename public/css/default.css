@@ -219,8 +219,7 @@ a.skype{
 .publishForm input[type="password"],
 .publishForm select,
 .publishForm textarea{
-    background: #ffffff url('../img/publish_input_background.png') no-repeat left top;
-    border: 1px solid #cdd7dd;
+    border: 1px solid #8195a0;
     border-radius: 3px;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -230,4 +229,30 @@ a.skype{
 }
 .publishForm input[type="submit"]{
     margin-top: 10px;
+}
+
+.fieldsForm p{
+    border: none;
+}
+.fieldsForm label{
+    display: inline-block;
+}
+.fieldsForm td,
+.fieldsForm th{
+    padding: 5px 10px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.fieldsForm td{
+    width: 40%;
+}
+.fieldsForm td + td{
+    width: 60%;
+}
+.fieldsForm small{
+    font-size: 12px;
+    font-style: italic;
+    line-height: 0px;
+    padding: 0px;
 }

@@ -1,6 +1,7 @@
 <?php
 
 class FieldCheckbox extends FieldType {    
+    
     function __construct() {
         parent::__construct();
     }

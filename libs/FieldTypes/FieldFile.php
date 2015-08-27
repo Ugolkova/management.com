@@ -3,6 +3,8 @@
 class FieldFile extends FieldType {    
     function __construct() {
         parent::__construct();
+        
+        $this->_setOptions('Allowed file types', 'file-types', 'JPG | GIF');
     }
     
     /**
