@@ -4,6 +4,7 @@ class Controller {
 
     function __construct() {
         $this->view = new View();
+        $this->request  = new Request();
     }
     
     public function loadModel($name, $modelPath = "models/"){

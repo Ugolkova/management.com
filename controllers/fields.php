@@ -1,13 +1,21 @@
 <?php
 
 class Fields extends Controller {
+    
+    public $availableFieldTypes = [];
 
     function __construct() {
         parent::__construct();
+        
+        $this->availableFieldTypes = array("text", "select", "file");
     }
 
     public function add(){
-        //$fieldText = new FieldText();
+        if($this->request->post('submit')){
+            print_r($_POST);
+        } else {
+            
+        }
         
         try {
             $fieldTypes = $this->_getFieldTypes();
@@ -24,8 +32,7 @@ class Fields extends Controller {
         require_once LIBS . 'FieldTypes/FieldType.php';
         $fieldTypes = [];
 
-        $availableTypes = array('file', 'select', 'text');
-        foreach($availableTypes as $type){
+        foreach($this->availableFieldTypes as $type){
             if(file_exists(LIBS . 'FieldTypes/Field' . ucfirst($type) . '.php')){
                 require_once LIBS . 'FieldTypes/Field' . ucfirst($type) . '.php';
                 

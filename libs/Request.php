@@ -3,6 +3,12 @@
 class Request {
     
     function __construct() {
+        if($_POST){
+            $url = parse_url($_SERVER['HTTP_REFERER']);
+            if($url['host'] !== HOST){
+                throw new Exception("Unknown host");
+            }
+        }
         // Use stripslashes for both POST and GET arrays
         $_POST  = $this->_stripslashes($_POST);
         $_GET   = $this->_stripslashes($_GET);

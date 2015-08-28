@@ -219,12 +219,17 @@ a.skype{
 .publishForm input[type="password"],
 .publishForm select,
 .publishForm textarea{
+    background: #FFF;
     border: 1px solid #8195a0;
     border-radius: 3px;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     margin: 2px 0;
     padding: 4px;
+}
+.publishForm input[type="text"],
+.publishForm input[type="password"],
+.publishForm textarea{
     width: 99%;
 }
 .publishForm input[type="submit"]{
@@ -255,4 +260,8 @@ a.skype{
     font-style: italic;
     line-height: 0px;
     padding: 0px;
+}
+
+.fieldOptions{
+    display: none;
 }

@@ -1,7 +1,18 @@
+<script>
+$(document).ready(function(){
+    $('select[name=field_type]').change(function(){
+        var fieldType = $(this).val();
+        
+        $('.fieldOptions').fadeOut(0);
+        $('#ft_' + fieldType).fadeIn(50);
+    }).change();
+});    
+</script>
+
 <h1>Add Field</h1>
 
 <section>            
-    <form action="<?php echo URL . 'users/add'; ?>" method="POST" class="publishForm fieldsForm">
+    <form action="<?php echo URL . 'fields/add'; ?>" method="POST" class="publishForm fieldsForm">
         <table>
             <thead>
                 <tr>
@@ -9,6 +20,19 @@
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td><label>Type</label></td>
+                    <td>
+                        <select name="field_type">
+                        <?php foreach($this->fieldTypes as $field): ?>
+                            <option value="<?php echo $field['type']; ?>">
+                                <?php echo ucfirst($field['type']); ?>
+                            </option>
+                        <?php endforeach; ?>    
+                        </select>
+                    </td>
+                </tr>
+                
                 <tr>
                     <td><label class="required">Field Label</label></td>
                     <td><input type="text" name="field_label" value="" /></td>
@@ -20,7 +44,8 @@
                 <tr>
                     <td><label class="required">Is this a required field?</label></td>
                     <td>
-                        <input type="radio" name="field_required" value="1" id="field_required_y" />
+                        <input type="radio" name="field_required" value="1" 
+                               id="field_required_y" checked="checked" />
                         <label for="field_required_y">Yes</label>
                         
                         <br />
@@ -37,7 +62,7 @@
             <table>
                 <thead>
                     <tr>
-                        <th colspan="2"><?php echo $field['type']; ?> Fields Options</th>
+                        <th colspan="2"><?php echo ucfirst($field['type']); ?> Field Options</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -45,7 +70,10 @@
                     <tr>
                         <td><?php echo $option['label']; ?></td>
                         <td>
+                            <?php if($option['instruction'] != ''): ?>
                             <small><?php echo $option['instruction']; ?></small>
+                            <?php endif; ?>
+                            
                             <input type="text" name="<?php echo $option['short_name'] ?>" 
                                    value="<?php echo $option['value']; ?>" /></td>
                     </tr>
