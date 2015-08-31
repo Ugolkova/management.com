@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Aug 28, 2015 at 06:43 PM
+-- Generation Time: Aug 31, 2015 at 06:33 PM
 -- Server version: 5.5.44-0ubuntu0.14.04.1
 -- PHP Version: 5.5.9-1ubuntu4.11
 
@@ -49,22 +49,30 @@ INSERT INTO `avatars` (`user_id`, `avatar_path`) VALUES
 
 CREATE TABLE IF NOT EXISTS `fields` (
   `field_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `field_name` varchar(40) NOT NULL,
-  `field_label` varchar(100) NOT NULL,
-  `field_type` enum('text','select') NOT NULL,
-  `field_list_items` int(11) NOT NULL,
-  `field_required` char(1) NOT NULL DEFAULT 'n',
+  `field_type` varchar(100) NOT NULL,
+  `field_label` varchar(255) NOT NULL,
+  `field_instructions` text,
+  `field_required` tinyint(1) DEFAULT '0',
   `field_settings` text NOT NULL,
-  PRIMARY KEY (`field_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+  `owner_id` int(100) NOT NULL,
+  PRIMARY KEY (`field_id`),
+  KEY `owner_id` (`owner_id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
 
 --
 -- Dumping data for table `fields`
 --
 
-INSERT INTO `fields` (`field_id`, `user_id`, `field_name`, `field_label`, `field_type`, `field_list_items`, `field_required`, `field_settings`) VALUES
-(1, 2, 'birthday', 'Birthday', 'text', 0, 'n', '');
+INSERT INTO `fields` (`field_id`, `field_type`, `field_label`, `field_instructions`, `field_required`, `field_settings`, `owner_id`) VALUES
+(7, 'select', 'test field', 'aaaa', 1, '', 1),
+(8, 'text', 'my_select label', 'my Select inst', 1, 'a:3:{s:9:"maxlength";s:0:"";s:9:"minlength";s:0:"";s:11:"placeholder";s:0:"";}', 1),
+(9, 'text', 'test label', 'test instruction', 0, 'a:3:{s:9:"maxlength";s:2:"11";s:9:"minlength";s:2:"12";s:11:"placeholder";s:8:"30 30 10";}', 1),
+(10, 'text', 'aaaaaaaab', 'cdddd', 0, 'a:3:{s:9:"maxlength";s:2:"20";s:9:"minlength";s:2:"53";s:11:"placeholder";s:1:"7";}', 1),
+(11, 'file', 'test select', 'select instruction', 1, 'a:1:{s:10:"file-types";s:15:"JPG | GIF | PNG";}', 1),
+(12, 'text', 'test', 'ssssbb333', 0, 'a:3:{s:9:"maxlength";s:2:"20";s:9:"minlength";s:1:"5";s:11:"placeholder";s:4:"2333";}', 1),
+(13, 'text', 'test', 'ssssbb', 0, 'a:3:{s:9:"maxlength";s:2:"20";s:9:"minlength";s:1:"6";s:11:"placeholder";s:1:"3";}', 1),
+(14, 'text', 'test 123', 'test instruction', 1, 'a:3:{s:9:"maxlength";s:2:"24";s:9:"minlength";s:2:"25";s:11:"placeholder";s:2:"26";}', 1),
+(15, 'text', 'abi', 'cdk', 0, 'a:3:{s:9:"maxlength";s:2:"el";s:9:"minlength";s:2:"fm";s:11:"placeholder";s:2:"gn";}', 1);
 
 -- --------------------------------------------------------
 
@@ -145,6 +153,12 @@ INSERT INTO `users` (`user_id`, `user_login`, `user_password`, `user_email`, `us
 --
 ALTER TABLE `avatars`
   ADD CONSTRAINT `avatars_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `fields`
+--
+ALTER TABLE `fields`
+  ADD CONSTRAINT `fields_ibfk_1` FOREIGN KEY (`owner_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `lm_users`
