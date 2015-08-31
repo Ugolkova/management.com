@@ -9,8 +9,27 @@ class Fields_model extends Model {
         $_SESSION['pm_id'] = 3;
     }
 
-    public function add(){
-        
+    /**
+     * Save Field
+     * 
+     * @param array $field
+     * @param integer|boolean $field_id
+     * @throws Exception
+     */
+    public function save($field, $field_id = FALSE){
+        if( $field_id ){
+            $this->db->update( 'fields', $field, 'field_id=' . $field_id );
+        } else {
+            $id = $this->db->insert('fields', $field);
+            if( !$id ){
+                throw new Exception("Can't add the field");
+            }
+        }   
+    }
+    
+    public function getField( $field_id ){
+        $field = $this->db->select( 'SELECT * FROM fields WHERE field_id=:field_id', array('field_id' => $field_id) );
+        return $field;
     }
 }
 

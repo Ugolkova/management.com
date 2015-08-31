@@ -21,7 +21,7 @@ class Users extends Controller {
      * @param type $param1
      * @param type $param2
      */
-    public function get_list( $param1 = null, $param2 = null ){
+    public function get_list( $param1 = null, $param2 = null ){        
         $page = 1;
         $userType = null;
 

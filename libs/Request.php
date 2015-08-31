@@ -82,6 +82,8 @@ class Request {
             $val = file_get_contents('php://input');
         }
         
+        $val = trim($val);
+        
         switch ($type){
             case "string":
                 $val = strval(preg_replace('/[^\p{L}\p{Nd}\d\s_\-\.\%\s]/ui', '', $val));
@@ -93,7 +95,7 @@ class Request {
                 $val = !empty($val);
                 break;
         }
-        
+
         return $val;        
     }
     

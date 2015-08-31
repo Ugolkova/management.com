@@ -24,7 +24,9 @@ class Database extends PDO {
         foreach($data as $key=>$value){
             $sth->bindValue(":$key", $value);
         }
+        
         $sth->execute();
+        
         return $this->lastInsertId();
     }
     
