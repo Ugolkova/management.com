@@ -1,7 +1,8 @@
 <?php
 
 class Fields_model extends Model {
-
+    private $_fieldsCount = 0;
+    
     function __construct() {
         parent::__construct();
         @session_start();
@@ -31,5 +32,31 @@ class Fields_model extends Model {
         $field = $this->db->select( 'SELECT * FROM fields WHERE field_id=:field_id', array('field_id' => $field_id) );
         return $field;
     }
+    
+    public function getList( $page ){
+        $limit = "LIMIT ";
+        if($page > 1){
+            $limit .= (($page - 1) * COUNT_ENTRIES_ON_PAGE) . ", " . COUNT_ENTRIES_ON_PAGE;
+        } else {
+            $limit .= COUNT_ENTRIES_ON_PAGE;
+        }
+        
+        $where = "WHERE owner_id=" . Session::get('user_id');
+        
+        $sql = "SELECT field_id, field_type, field_label FROM fields $where $limit";
+                
+        $fieldsArr = $this->db->select( $sql ); 
+
+        $sql = "SELECT field_id, field_type, field_label FROM fields $where";
+        
+        $this->_fieldsCount = $this->db->select( $sql, [], PDO::FETCH_NUM )[0][0];
+        
+        return $fieldsArr;        
+    }
+    
+    public function getRowsCount(){
+        return $this->_fieldsCount;
+    }
+    
 }
 

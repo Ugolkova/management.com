@@ -1,6 +1,6 @@
 <form action="<?php echo URL; ?>/users/search" class="searchForm">
     <fieldset>
-        <legend>Total users: 25</legend>
+        <legend>Total users: <?php echo $this->usersCount; ?></legend>
         <input type="text" value="" placeholder="Keywords" />
         <input type="submit" name="submit" value="" />
 
@@ -22,16 +22,7 @@
     </fieldset>
 </form>    
 
-<div class="pagination">
-    <div class="prev"></div>
-    <div class="next"></div>
-    <ul>
-        <li><a href="#1">1</a></li>
-        <li><strong>2</strong></li>
-        <li><a href="#3">3</a></li>
-        <div class="clear"></div>
-    </ul>
-</div>
+<?php echo $this->pagination; ?>
 
 <?php if( empty($this->users) ) : ?>
     <p>There are no entries matching the criteria you selected.</p>
@@ -65,17 +56,8 @@
             <?php endforeach; ?>
         </tbody>
     </table>
-
-    <div class="pagination">
-        <div class="prev"></div>
-        <div class="next"></div>
-        <ul>
-            <li><a href="#1">1</a></li>
-            <li><strong>2</strong></li>
-            <li><a href="#3">3</a></li>
-            <div class="clear"></div>
-        </ul>
-    </div>
+    
+    <?php echo $this->pagination; ?>
 
     <div class="tableSubmit">
         <input type="submit" name="submit" value="Submit" />

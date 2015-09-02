@@ -39,9 +39,15 @@ class Users extends Controller {
             }
         }
         
-        $usersArr = $this->model->getList($page, $userType);
+        $usersArr   = $this->model->getList($page, $userType);
+        $usersCount = $this->model->getRowsCount();
         
-        $this->view->users = $usersArr;
+        $this->view->users      = $usersArr;
+        $this->view->usersCount = $usersCount;
+        
+        $pagination = new Pagination();
+        $this->view->pagination = $pagination->createLinks($page, $usersCount);
+        
         $this->view->render("users/list");
     }
     

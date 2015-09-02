@@ -10,6 +10,26 @@ class Fields extends Controller {
         $this->availableFieldTypes = array("text", "select", "file");
     }
 
+    
+    public function get_list( $page = null ){        
+        if(preg_match('/^p(\d+)$/', $page, $matches) === 1){
+            $page = (int)$matches[1];
+        } else {
+            $page = 1;
+        }
+        
+        $fieldsArr   = $this->model->getList( $page );
+        $fieldsCount = $this->model->getRowsCount();
+        
+        $this->view->fields         = $fieldsArr;
+        $this->view->fieldsCount    = $fieldsCount;
+        
+        $pagination = new Pagination();
+        $this->view->pagination = $pagination->createLinks($page, $fieldsCount);
+        $this->view->render("fields/list");
+    }
+    
+    
     /**
      * Add field
      * 
@@ -169,10 +189,6 @@ class Fields extends Controller {
         }
         
         return $fieldTypes;
-    }
-    
-    public function get_list(){
-        echo 'Get list';
     }
 
 }

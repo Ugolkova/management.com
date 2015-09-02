@@ -173,24 +173,36 @@ a.skype{
     padding: 0px 15px;
     position: relative;    
 }
-.pagination li{
+.pagination a,
+.pagination strong{
     float: left;
     margin: 0px 5px;
 }
-.pagination .prev, .pagination .next{
-    background: url(../img/pagination_prev_button.gif) center center no-repeat;
+.pagination .prev, 
+.pagination .next, 
+.pagination .first, 
+.pagination .last{
+    background-position: center center;
+    background-repeat: no-repeat;
     display: block;
     height: 13px;
-    left: 0px;
-    position: absolute;
+    position: relative;
     top: 3px;
     width: 13px;
 }
 .pagination .prev{
-    background-image: url(../img/pagination_next_button.gif);
-    left: auto;
-    right: 0px;
+    background-image: url(../img/pagination_prev_button.gif);
 }
+.pagination .next{
+    background-image: url(../img/pagination_next_button.gif);
+}
+.pagination .first{
+    background-image: url(../img/pagination_first_button.gif);
+}
+.pagination .last{
+    background-image: url(../img/pagination_last_button.gif);
+}
+
 .tableSubmit{
     bottom: 0px;
     float: right;

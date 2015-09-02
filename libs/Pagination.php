@@ -10,51 +10,63 @@ class Pagination {
      * Items per page
      * @var int 
      */
-    private $_perPage = 3;
     private $_prevLink = '';
     private $_nextLink = '';
     private $_firstLink = '';
     private $_lastLink = '';
     
-    
-    public function createLinks($curNum, $link, $totalRows){
-        $totalNum = (int) ceil($totalRows / $this->_perPage);
+    /**
+     * Create links
+     * 
+     * @param int $curPageNum Current page number
+     * @param string $link 
+     * @param int $totalRows
+     * @return string Returns pagination div
+     */
+    public function createLinks( $curPageNum, $totalRows ){
+        $requestUri = preg_replace( "/[p]\d+\/?/", "", $_SERVER['REQUEST_URI']);
+        $link = URL . trim( $requestUri, '/') . '/p';
+        
+        $totalNum = (int) ceil( $totalRows / COUNT_ENTRIES_ON_PAGE );
         $html = '';
         
-        $start = $curNum - $this->_interval;
-        if($start < 1){
+        $start = $curPageNum - $this->_interval;
+        if( $start < 1 ){
             $start = 1;
         }
         
-        $end = $curNum + $this->_interval;
-        if($end > $totalNum){
+        $end = $curPageNum + $this->_interval;
+        if( $end > $totalNum ){
             $end = $totalNum;
         }    
         
-        if($start > 1){
-            $html .= '<a href="' . $link . '1" class="first">' . $this->_firstLink . '</a>';
+        if( $start > 1 ){
+            $html .= '<a href="' . $link . '1/" class="first">' 
+                    . $this->_firstLink . '</a>';
         }
-        if($curNum > 1){
-            $html .= '<a href="' . $link . ($curNum - 1) . '" class="prev">' . $this->_prevLink . '</a>';
+        if( $curPageNum > 1 ){
+            $html .= '<a href="' . $link . ( $curPageNum - 1 ) 
+                    . '/" class="prev">' . $this->_prevLink . '</a>';
         }
         
-        for($i = $start; $i <= $end; $i++){
-            if($i == $curNum){
+        for( $i = $start; $i <= $end; $i++ ){
+            if($i == $curPageNum){
                 $html .= '<strong>' . $i . '</strong>';
             } else {
-                $html .= '<a href="' . $link . $i . '">' . $i . '</a>';
+                $html .= '<a href="' . $link . $i . '/">' . $i . '</a>';
             }
         }
         
-        if($curNum < $totalNum){
-            $html .= '<a href="' . $link . ($curNum + 1) . '" class="next">' . $this->_nextLink . '</a>';
+        if( $curPageNum < $totalNum ){
+            $html .= '<a href="' . $link . ( $curPageNum + 1 ) 
+                    . '/" class="next">' . $this->_nextLink . '</a>';
         }
         
-        if(($curNum + $this->_interval) < $totalNum){
-            $html .= '<a href="' . $link .  $totalNum . '" class="last">' . $this->_lastLink . '</a>';
+        if( ( $curPageNum + $this->_interval ) < $totalNum ){
+            $html .= '<a href="' . $link .  $totalNum . '/" class="last">' . $this->_lastLink . '</a>';
         }
         
-        if($html != ''){
+        if( $html != '' ){
             return '<div class="pagination">' . $html . '</div>';
         }
         

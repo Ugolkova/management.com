@@ -12,7 +12,7 @@ class Database extends PDO {
         foreach($array as $key=>$value){
             $sth->bindValue($key, $value);
         }
-        $sth->execute();
+        $q = $sth->execute();
         return $sth->fetchAll($fetchMode);
     }
     
