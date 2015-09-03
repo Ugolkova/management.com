@@ -96,17 +96,23 @@ form{
 }
 
 input[type="submit"]{
-    background: -webkit-linear-gradient(#e11842, #e11842, #E8496A);
+    /*background: -webkit-linear-gradient(#94144F, #94144F, #E8496A);
     background: -o-linear-gradient(#e11842, #e11842, #E8496A);
     background: -moz-linear-gradient(#e11842, #e11842, #E8496A);
-    background: linear-gradient(#e11842, #e11842, #E8496A);
+    background: linear-gradient(#e11842, #e11842, #E8496A);*/
+    background: #94144F;
     border: none;
     border-radius: 3px;
         -moz-border-radius: 3px;
             -webkit-border-radius: 3px;
     color: #FFF;
+    cursor: pointer;
     line-height: 21px;
     margin-right: 5px;
+}
+
+input[type="submit"]:hover{
+    opacity: 0.9;
 }
 
 fieldset{
@@ -114,12 +120,16 @@ fieldset{
     padding: 10px;
 } 
 
-form.searchForm input[type="text"]{
+input[type="text"],
+input[type="password"]{
     background-color: #FFF;
     border: 1px solid #8195a0;
     border-radius: 5px;
         -moz-border-radius: 5px;
             -webkit-border-radius: 5px;
+}
+
+form.searchForm input[type="text"]{
     float: left;    
     height: 15px;
     left: 0px;
@@ -132,7 +142,6 @@ form.searchForm input[type="text"]{
 form.searchForm input[type="submit"]{
     background: transparent url(../img/search_btn.gif) left top no-repeat;
     border-style: none;
-    cursor: pointer;
     float: left;
     height: 30px;
     left: -27px;

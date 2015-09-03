@@ -10,6 +10,9 @@ class Fields extends Controller {
         $this->availableFieldTypes = array("text", "select", "file");
     }
 
+    public function index(  ){
+        $this->get_list();
+    }
     
     public function get_list( $page = null ){        
         if(preg_match('/^p(\d+)$/', $page, $matches) === 1){

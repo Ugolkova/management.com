@@ -8,7 +8,7 @@ class Users extends Controller {
     }
     
     function index(){
-        $this->full_list();
+        $this->get_list();
     }
     
     /**

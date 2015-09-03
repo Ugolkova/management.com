@@ -1,0 +1,82 @@
+<style>
+    body{
+        background: #7DABD2;
+    }
+    section{
+        left: 50%;
+        position: absolute;
+        top: 50%;
+        margin: -233px 0px 0px -200px;
+    }
+    section > div{
+        background: inherit;
+        padding: 0px;
+    }
+    h1{
+        display: none;
+    }
+    form#login{
+        background: url(/public/img/logo.png) center top no-repeat;
+        background-size: 200px 200px;
+        color: #2B343C;
+        font-size: 16px;
+        height: 114px;
+        margin: 0 auto;
+        padding-top: 222px;
+        width: 400px;
+    }
+    form#login label{
+        color: #2B343C;
+        display: block;
+        font-size: 16px;
+    }
+    form#login input[type="text"],
+    form#login input[type="password"]{
+        display: block;
+        font-size: inherit;
+        height: 30px;
+        padding: 0px 10px;
+        margin-bottom: 10px;
+        width: 380px;
+    }
+    form#login input[type="text"]:focus,
+    form#login input[type="password"]:focus,
+    input:-webkit-autofill{
+        background: #F5EBED;
+    }    
+    form#login input[type="submit"]{
+        border-radius: 5px;
+            -moz-border-radius: 5px;
+                -webkit-border-radius: 5px;
+        float: right;
+        font-size: inherit;
+        height: 35px;
+        margin: 0px;
+        padding: 0px 15px;
+        position: relative;
+        right: 0px;
+    }
+    form#login a{
+        float: right;
+        font-size: 14px;
+        position: relative;
+        right: 20px;
+        text-decoration: underline;
+        top: 7px;
+    }
+    form#login a:hover{
+        text-decoration: none;
+    }    
+</style>
+
+<form method="POST" action="<?php echo URL; ?>login/run/" id="login">
+    <input type="hidden" name="token" value="<?php echo $this->token; ?>" />
+    
+    <label>Username:</label>
+    <input name="login" type="text" value="" />
+    <label>Password:</label>
+    <input name="password" type="password" value="" />
+    
+    <input name="submit" type="submit" value="Login" />
+    <a href="#" title="Forgot your password?">Forgot your password?</a>
+</form>

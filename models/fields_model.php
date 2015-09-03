@@ -47,7 +47,7 @@ class Fields_model extends Model {
                 
         $fieldsArr = $this->db->select( $sql ); 
 
-        $sql = "SELECT field_id, field_type, field_label FROM fields $where";
+        $sql = "SELECT COUNT(*) as fields_count FROM fields $where";
         
         $this->_fieldsCount = $this->db->select( $sql, [], PDO::FETCH_NUM )[0][0];
         
