@@ -39,14 +39,14 @@ class Fields extends Controller {
      * Firstly we check if we have post data and then save it
      */
     public function add(){        
-        if( $this->request->post( 'submit' ) ){            
-            $field['field_type'] = $this->request->post('field_type', 'string');
-            $field['field_label'] = $this->request->post('field_label', 'string');
-            $field['field_instructions'] = $this->request
-                                                ->post('field_instructions', 'string');
-            $field['field_required'] = $this->request
-                                            ->post('field_required', 'boolean');
-            $field['owner_id'] = $this->request->post('owner_id', 'integer');                
+        if( $this->form->validate( 'submit' ) ){            
+            $field['field_type'] = $this->form->validate('field_type', 'string');
+            $field['field_label'] = $this->form->validate('field_label', 'string');
+            $field['field_instructions'] = $this->form
+                                                ->validate('field_instructions', 'string');
+            $field['field_required'] = $this->form
+                                            ->validate('field_required', 'boolean');
+            $field['owner_id'] = $this->form->validate('owner_id', 'integer');                
 
             $this->_save( $field );    
         } else {
@@ -74,16 +74,30 @@ class Fields extends Controller {
      * @param integer $field_id
      */
     public function edit( $field_id ){        
-        if( $this->request->post( 'submit' ) ){            
-            $field['field_type'] = $this->request->post('field_type', 'string');
-            $field['field_label'] = $this->request->post('field_label', 'string');
-            $field['field_instructions'] = $this->request
-                                                ->post('field_instructions', 'string');
-            $field['field_required'] = $this->request
-                                            ->post('field_required', 'boolean');
-            $field['owner_id'] = $this->request->post('owner_id', 'integer');                
+        if( $this->form->validate( 'submit' ) ){  
+            require_once LIBS . 'FieldTypes/FieldType.php';
+    
+            $countEntries = COUNT($_POST['field_id']);
+            for( $i = 0; $i < $countEntries; $i++ ){
+                $field['field_type'] = $this->form->validate("field_type[$i]", 'string');
+                $field['field_label'] = $this->form->validate("field_label[$i]", 'string');
+                $field['field_instructions'] = $this->form
+                                                    ->validate("field_instructions[$i]", 'string');
+                $field['field_required'] = $this->form
+                                                ->validate("field_required[$i]", 'boolean');
+                $field['owner_id'] = $this->form->validate("owner_id[$i]", 'integer');                
 
-            $field = $this->_save( $field, $field_id );    
+                
+                $ft = $this->_getFieldType( $field['field_type'] );
+                foreach( $ft['options'] as $option ){
+                    $field_settings[$option['short_name']] = 
+                            $this->form->validate( $option['short_name'] . "[$i]" );
+                }
+
+                $field['field_settings'] = serialize($field_settings);
+
+                $field = $this->_save( $field, $field_id );                    
+            }
         } else {
             $field = $this->model->getField( $field_id )[0];
             if( !$field ){
@@ -126,15 +140,6 @@ class Fields extends Controller {
      */
     private function _save( $field, $field_id = FALSE ){
         try{
-            require_once LIBS . 'FieldTypes/FieldType.php';
-            $ft = $this->_getFieldType( $field['field_type'] );
-            foreach( $ft['options'] as $option ){
-                $field_settings[$option['short_name']] = 
-                        $this->request->post( $option['short_name'] );
-            }
-
-            $field['field_settings'] = serialize($field_settings);
-            
             $this->model->save( $field, $field_id );
             if( $field_id ){
                 Session::set( 'message', array('success' => 'Field is updated') );

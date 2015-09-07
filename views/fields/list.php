@@ -21,7 +21,7 @@
 <?php if( empty($this->fields) ) : ?>
     <p>There are no entries matching the criteria you selected.</p>
 <?php else: ?>               
-<form action="<?php echo URL . "edit/" ?>" method="POST">
+<form action="<?php echo URL . "fields/edit/" ?>" method="POST">
     <table>
         <thead>
             <tr>
