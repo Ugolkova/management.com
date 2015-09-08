@@ -19,7 +19,10 @@ class Fields_model extends Model {
      */
     public function save($field, $field_id = FALSE){
         if( $field_id ){
-            $this->db->update( 'fields', $field, 'field_id=' . $field_id );
+            //$field['owner_id'] = 1;
+            if( !$this->db->update( 'fields', $field, 'field_id=' . $field_id )){
+                throw new Exception("Wrong data for field #" . $field_id);
+            }
         } else {
             $id = $this->db->insert('fields', $field);
             if( !$id ){

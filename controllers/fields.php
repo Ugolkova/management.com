@@ -73,12 +73,17 @@ class Fields extends Controller {
      * 
      * @param integer $field_id
      */
-    public function edit( $field_id ){        
+    public function edit( $field_id = null ){        
         if( $this->form->validate( 'submit' ) ){  
             require_once LIBS . 'FieldTypes/FieldType.php';
-    
+
+            $msg_success = [];
+            $msg_error = [];    
+            
             $countEntries = COUNT($_POST['field_id']);
             for( $i = 0; $i < $countEntries; $i++ ){
+                $field_id = $this->form->validate("field_id[$i]", 'integer');
+                
                 $field['field_type'] = $this->form->validate("field_type[$i]", 'string');
                 $field['field_label'] = $this->form->validate("field_label[$i]", 'string');
                 $field['field_instructions'] = $this->form
@@ -86,73 +91,72 @@ class Fields extends Controller {
                 $field['field_required'] = $this->form
                                                 ->validate("field_required[$i]", 'boolean');
                 $field['owner_id'] = $this->form->validate("owner_id[$i]", 'integer');                
-
                 
                 $ft = $this->_getFieldType( $field['field_type'] );
+                
+                $field_settings = [];
                 foreach( $ft['options'] as $option ){
-                    $field_settings[$option['short_name']] = 
+                    $field_settings[] = 
                             $this->form->validate( $option['short_name'] . "[$i]" );
                 }
-
+                
                 $field['field_settings'] = serialize($field_settings);
-
-                $field = $this->_save( $field, $field_id );                    
+               
+                $fields[] = $field;
+                try{
+                    $this->model->save( $field, $field_id );
+                    $msg_success[] = "Field #" . $field_id . " successfully updated";
+                } catch(Exception $e){
+                    $msg_error[] = $e->getMessage();
+                }    
+                
             }
+            
+            if( !empty( $msg_success ) ){
+                Session::set( 'message', array('success' => $msg_success) );
+            } 
+            elseif( !empty( $msg_error ) ) {
+                Session::set( 'message', array('error' => $msg_error) );     
+            } 
+            
+            //header("location: " . URL . 'fields/get_list');
+            
         } else {
-            $field = $this->model->getField( $field_id )[0];
-            if( !$field ){
-                header( "location: " . URL . "users/get_list/" );
+            $fields = array();
+            
+            if( $field_id == null ){
+                $field_ids = $_POST['field_id'];
+                if( !is_array( $field_ids ) || empty( $field_ids ) ){
+                    header( "location: " . URL . "fields/get_list/" );
+                }
+                foreach( $field_ids as $field_id ){
+                    $field = $this->model->getField( $field_id )[0];
+                    if( $field ){
+                        $fields[] = $field;
+                    }
+                }
+            } else {
+                $field = $this->model->getField( $field_id )[0];   
+                if( $field ){
+                    $fields[] = $field;
+                }
+            }
+            
+            if( empty($fields) ){
+                header( "location: " . URL . "fields/get_list/" );
                 die();
             }
         }
                 
         // Set settings value we already have
         $fieldTypes = $this->_getFieldTypes();
-        $field_settings = unserialize($field['field_settings']);
-        foreach($fieldTypes as &$ft){
-            if( !empty( $ft['options'] ) ){
-                foreach( $ft['options'] as &$option ){
-                    if( !empty( $field_settings ) ){
-                        foreach( $field_settings as $k=>$v ){
-                            if( $option['short_name'] == $k ){
-                                $option['value'] = $v;
-                            }
-                        }
-                    }
-                }
-            }    
-        }
         
         $this->view->setTitle("Edit Field" );
         $this->view->setHeader( "Edit Field" );
-        $this->view->field = $field;
+        $this->view->fields = $fields;
         $this->view->fieldTypes = $fieldTypes;
         $this->view->fieldId = $field_id;
-        $this->view->render("fields/add");
-    }
-    
-    /**
-     * Save Field
-     * 
-     * @param array $field
-     * @param integer|boolean $field_id
-     * @return array
-     */
-    private function _save( $field, $field_id = FALSE ){
-        try{
-            $this->model->save( $field, $field_id );
-            if( $field_id ){
-                Session::set( 'message', array('success' => 'Field is updated') );
-            } else {
-                Session::set( 'message', array('success' => 'Field is added') );
-            }
-            
-            header("location: " . URL . 'fields/get_list');                
-        } catch(Exception $e) {
-            Session::set( 'message', array('error' => $e->getMessage()) );
-        }
-        
-        return $field;
+        $this->view->render("fields/edit");
     }
     
     /**

@@ -91,6 +91,13 @@ td:last-child{
     text-align: center;
 }
 
+hr{
+    background-color: #2A3940;
+    border: none;
+    height: 1px;
+    margin: 50px 0px;
+}
+
 form{
     position: relative;
 }

@@ -37,7 +37,7 @@
                 <td><?php echo $field['field_id']; ?></td>
                 <td><a href="<?php echo URL . "fields/edit/" . $field['field_id']; ?>" title="<?php echo $field['field_label']; ?>"><?php echo $field['field_label']; ?></a></td>
                 <td><?php echo $field['field_type']; ?></td>
-                <td><input type="checkbox" name="ids[]" value="1" /></td>
+                <td><input type="checkbox" name="field_id[]" value="<?php echo $field['field_id']; ?>" /></td>
             </tr>
             <?php endforeach; ?>
         </tbody>
@@ -46,7 +46,7 @@
     <?php echo $this->pagination; ?>
 
     <div class="tableSubmit">
-        <input type="submit" name="submit" value="Submit" />
+        <input type="submit" name="submit_action" value="Submit" />
         <select name="action">
             <option value="edit">edit selected</option>
             <option value="delete">delete selected</option>

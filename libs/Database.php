@@ -42,7 +42,8 @@ class Database extends PDO {
         foreach($data as $key=>$value){
             $sth->bindValue(":$key", $value);
         }
-        $sth->execute();
+        
+        return $sth->execute();        
     }
     
     public function delete($table, $where, $limit = 1){
