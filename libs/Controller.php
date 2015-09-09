@@ -6,7 +6,6 @@ class Controller {
 
     function __construct() {
         $this->view = new View();
-        $this->form  = new Form();
         
         Session::init();
         Session::set('user_id', 1);

@@ -1,9 +1,6 @@
 <?php
 
-class FieldText extends FieldType {    
-    
-    private $_options = [];
-    
+class FieldText extends FieldType {        
     function __construct() {
         parent::__construct();
         

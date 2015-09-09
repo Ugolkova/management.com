@@ -7,10 +7,11 @@ class Login_model extends Model{
     }
 
     public function run(){
-        $login      = $this->request->post( "login" );
-        $password   = $this->request->post( "password" );
-        $token      = $this->request->post( "token" );
+        $login      = $this->form->validate( "login", "string" );
+        $password   = $this->form->validate( "password", "string" );
+        $token      = $this->form->validate( "token", "string" );
 
+        Session::init();
         if( $token !== Session::get( "token" )){
             header( "location:" . URL . "login/");
             exit;

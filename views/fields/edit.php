@@ -11,10 +11,12 @@ $(document).ready(function(){
 </script>
 
 <form action="<?php echo URL . 'fields/' . (($this->fieldId) ? 'edit/' . $this->fieldId : 'add')  ; ?>" method="POST" class="publishForm fieldsForm">
+    <input type="hidden" name="token" value="<?php echo $this->token; ?>" />
+    
     <?php foreach($this->fields as $k => $field): ?>    
     <table>
-        <input type="hidden" name="owner_id" value="<?php echo Session::get( 'user_id' ); ?>" />
-        <input type="hidden" name="field_id[]" value="<?php echo $field['field_id'];?>" />
+        <input type="hidden" name="owner_id[]" value="<?php echo $field['owner_id']; ?>" />
+        <input type="hidden" name="field_id[]" value="<?php echo $field['field_id']; ?>" />
         <thead>
             <tr>
                 <th colspan="2">Fields Settings</th>
@@ -76,7 +78,8 @@ $(document).ready(function(){
                         <?php endif; ?>
 
                         <input type="text" name="<?php echo $option['short_name'] ?>[]" 
-                               value="<?php echo $option['value']; ?>" /></td>
+                               value="<?php echo (isset($field['field_settings'][$option['short_name']]) ? 
+                               $field['field_settings'][$option['short_name']] : ''); ?>" /></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>    

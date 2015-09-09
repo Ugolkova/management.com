@@ -11,6 +11,13 @@ class Form {
         }
         // Use stripslashes for both POST and GET arrays
         $_POST  = $this->_stripslashes($_POST);
+        
+        // TODO: better use Session::destroy()
+        $token = $this->validate( "token", "string" );
+
+        if( $token !== Session::get( "token" )){
+            throw new Exception("Wrong token");
+        }
     }
     
     /**

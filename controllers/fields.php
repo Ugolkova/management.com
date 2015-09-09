@@ -73,10 +73,18 @@ class Fields extends Controller {
      * 
      * @param integer $field_id
      */
-    public function edit( $field_id = null ){        
-        if( $this->form->validate( 'submit' ) ){  
-            require_once LIBS . 'FieldTypes/FieldType.php';
+    public function edit( $field_id = null ){ 
+        require_once LIBS . 'FieldTypes/FieldType.php';
 
+        if( isset( $_POST['submit'] ) ){
+            try{
+                $this->form = new Form();
+            } catch (Exception $e) {
+                header( "location: " . $_SERVER['HTTP_REFERER'] );
+                Session::set( 'message', array('error' => array($e->getMessage())) );
+                exit();
+            }
+            
             $msg_success = [];
             $msg_error = [];    
             
@@ -84,8 +92,10 @@ class Fields extends Controller {
             for( $i = 0; $i < $countEntries; $i++ ){
                 $field_id = $this->form->validate("field_id[$i]", 'integer');
                 
-                $field['field_type'] = $this->form->validate("field_type[$i]", 'string');
-                $field['field_label'] = $this->form->validate("field_label[$i]", 'string');
+                $field['field_type'] = $this->form
+                                            ->validate("field_type[$i]", 'string');
+                $field['field_label'] = $this->form
+                                             ->validate("field_label[$i]", 'string');
                 $field['field_instructions'] = $this->form
                                                     ->validate("field_instructions[$i]", 'string');
                 $field['field_required'] = $this->form
@@ -96,10 +106,10 @@ class Fields extends Controller {
                 
                 $field_settings = [];
                 foreach( $ft['options'] as $option ){
-                    $field_settings[] = 
+                    $field_settings[$option['short_name']] = 
                             $this->form->validate( $option['short_name'] . "[$i]" );
                 }
-                
+
                 $field['field_settings'] = serialize($field_settings);
                
                 $fields[] = $field;
@@ -119,30 +129,46 @@ class Fields extends Controller {
                 Session::set( 'message', array('error' => $msg_error) );     
             } 
             
-            //header("location: " . URL . 'fields/get_list');
+            header( "location: " . $_SERVER['REQUEST_URI'] );
             
         } else {
+            Session::init();
+            Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
+            $this->view->token = Session::get( 'token' );            
+
             $fields = array();
             
+            /*
+             * If we have field id in URL we use it for getting $field,
+             * otherwise we use (array)$_POST['field_id']
+             */
             if( $field_id == null ){
-                $field_ids = $_POST['field_id'];
+                $field_ids = (array)$_POST['field_id'];
                 if( !is_array( $field_ids ) || empty( $field_ids ) ){
                     header( "location: " . URL . "fields/get_list/" );
                 }
-                foreach( $field_ids as $field_id ){
-                    $field = $this->model->getField( $field_id )[0];
+                foreach( $field_ids as $f_id ){
+                    $field = $this->model->getField( $f_id )[0];
+                    $field['field_settings'] = unserialize($field['field_settings']);
+                    
                     if( $field ){
                         $fields[] = $field;
                     }
                 }
             } else {
-                $field = $this->model->getField( $field_id )[0];   
+                $field_ids[] = $field_id; 
+                $field = $this->model->getField( $field_id );  
                 if( $field ){
-                    $fields[] = $field;
-                }
+                    $field = $field[0];
+                    $field['field_settings'] = unserialize($field['field_settings']);
+                    if( $field ){
+                        $fields[] = $field;
+                    }
+                }    
             }
             
             if( empty($fields) ){
+                Session::set('message', array('error' => 'Fields ( #' . implode(', #', $field_ids) . ' ) not found.'));
                 header( "location: " . URL . "fields/get_list/" );
                 die();
             }
