@@ -14,7 +14,7 @@ class Fields_model extends Model {
      * Save Field
      * 
      * @param array $field
-     * @param integer|boolean $field_id
+     * @param integer $field_id
      * @throws Exception
      */
     public function save($field, $field_id = FALSE){
@@ -22,13 +22,15 @@ class Fields_model extends Model {
             //$field['owner_id'] = 1;
             if( !$this->db->update( 'fields', $field, 'field_id=' . $field_id )){
                 throw new Exception("Wrong data for field #" . $field_id);
-            }
+            }            
         } else {
-            $id = $this->db->insert('fields', $field);
-            if( !$id ){
+            $field_id = $this->db->insert('fields', $field);
+            if( !$field_id ){
                 throw new Exception("Can't add the field");
             }
         }   
+        
+        return $field_id;
     }
     
     public function getField( $field_id ){

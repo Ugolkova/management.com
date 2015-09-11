@@ -38,18 +38,52 @@ class Fields extends Controller {
      * 
      * Firstly we check if we have post data and then save it
      */
-    public function add(){        
-        if( $this->form->validate( 'submit' ) ){            
-            $field['field_type'] = $this->form->validate('field_type', 'string');
-            $field['field_label'] = $this->form->validate('field_label', 'string');
-            $field['field_instructions'] = $this->form
-                                                ->validate('field_instructions', 'string');
-            $field['field_required'] = $this->form
-                                            ->validate('field_required', 'boolean');
-            $field['owner_id'] = $this->form->validate('owner_id', 'integer');                
+    public function add(){  
+        require_once LIBS . 'FieldTypes/FieldType.php';
 
-            $this->_save( $field );    
-        } else {
+        if( isset( $_POST['submit'] ) ){
+            try{
+                $this->form = new Form();
+            } catch (Exception $e) {
+                header( "location: " . $_SERVER['HTTP_REFERER'] );
+                Session::set( 'message', array('error' => array($e->getMessage())) );
+                exit();
+            }
+            
+            $field['field_type'] = $this->form
+                                        ->setToRightType("field_type", 'string')
+                                        ->validate("required");
+            $field['field_label'] = $this->form
+                                         ->setToRightType("field_label", 'string');
+            $field['field_instructions'] = $this->form
+                                                ->setToRightType("field_instructions", 'string');
+            $field['field_required'] = $this->form
+                                            ->setToRightType("field_required", 'boolean');
+            $field['owner_id'] = $this->form->setToRightType("owner_id", 'integer');                
+
+            $ft = $this->_getFieldType( $field['field_type'] );
+
+            $field_settings = [];
+            foreach( $ft['options'] as $option ){
+                $field_settings[$option['short_name']] = 
+                        $this->form->setToRightType( $option['short_name'] );
+            }
+
+            $field['field_settings'] = serialize($field_settings);
+
+            try{
+                $field_id = $this->model->save( $field );
+                Session::set( 'message', array('success' => "Field successfully added") );
+                header( "location: " . URL . "fields/edit/" . $field_id );
+            } catch( Exception $e ){
+                Session::set( 'message', array('error' => $e->getMessage()) );
+                header( "location: " . URL . "fields/get_list/" );
+            }              
+        } else {  
+            Session::init();
+            Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
+            $this->view->token = Session::get( 'token' );  
+            
             $field = array(
                 'field_type' => '',
                 'field_label' => '',
@@ -90,33 +124,33 @@ class Fields extends Controller {
             
             $countEntries = COUNT($_POST['field_id']);
             for( $i = 0; $i < $countEntries; $i++ ){
-                $field_id = $this->form->validate("field_id[$i]", 'integer');
+                $f_id = $this->form->setToRightType("field_id[$i]", 'integer');
                 
                 $field['field_type'] = $this->form
-                                            ->validate("field_type[$i]", 'string');
+                                            ->setToRightType("field_type[$i]", 'string');
                 $field['field_label'] = $this->form
-                                             ->validate("field_label[$i]", 'string');
+                                             ->setToRightType("field_label[$i]", 'string');
                 $field['field_instructions'] = $this->form
-                                                    ->validate("field_instructions[$i]", 'string');
+                                                    ->setToRightType("field_instructions[$i]", 'string');
                 $field['field_required'] = $this->form
-                                                ->validate("field_required[$i]", 'boolean');
-                $field['owner_id'] = $this->form->validate("owner_id[$i]", 'integer');                
+                                                ->setToRightType("field_required[$i]", 'boolean');
+                $field['owner_id'] = $this->form->setToRightType("owner_id[$i]", 'integer');                
                 
                 $ft = $this->_getFieldType( $field['field_type'] );
                 
                 $field_settings = [];
                 foreach( $ft['options'] as $option ){
                     $field_settings[$option['short_name']] = 
-                            $this->form->validate( $option['short_name'] . "[$i]" );
+                            $this->form->setToRightType( $option['short_name'] . "[$i]" );
                 }
 
                 $field['field_settings'] = serialize($field_settings);
                
                 $fields[] = $field;
                 try{
-                    $this->model->save( $field, $field_id );
-                    $msg_success[] = "Field #" . $field_id . " successfully updated";
-                } catch(Exception $e){
+                    $this->model->save( $field, $f_id );
+                    $msg_success[] = "Field #" . $f_id . " successfully updated";
+                } catch( Exception $e ){
                     $msg_error[] = $e->getMessage();
                 }    
                 
@@ -129,7 +163,11 @@ class Fields extends Controller {
                 Session::set( 'message', array('error' => $msg_error) );     
             } 
             
-            header( "location: " . $_SERVER['REQUEST_URI'] );
+            if( $field_id === NULL ) {
+                header( "location: " . URL . "fields/get_list/" );
+            } else {
+                header( "location: " . $_SERVER['REQUEST_URI'] );
+            }
             
         } else {
             Session::init();

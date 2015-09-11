@@ -44,9 +44,9 @@ class Form {
      * so the value of variable $age equals (int)$_POST['age']
      * @param string $name
      * @param string $type We use three types: string | integer | boolean
-     * @return string | array
+     * @return string
      */
-    function validate($name, $type = null){
+    function setToRightType($name, $type = null){
         $val = null;
         
         
@@ -77,6 +77,8 @@ class Form {
             case "boolean":
                 $val = !empty($val);
                 break;
+            default:
+                break;
         }
 
         return $val;        
@@ -98,4 +100,19 @@ class Form {
         return null;
     }
     
+    
+    function validate( $val, $param ){
+        switch($param){
+            case "required":
+                if( $val == "" ){
+                    throw new Exception("Field is required");
+                }
+                
+                break;
+            default:
+                break;
+        }
+        
+        return $val;
+    }
 }

@@ -1,4 +1,4 @@
-<script>
+    <script>
 $(document).ready(function(){
     $('select[name*=field_type]').change(function(){
         var fieldType = $(this).val();
@@ -10,7 +10,7 @@ $(document).ready(function(){
 });    
 </script>
 
-<form action="<?php echo URL . 'fields/' . (($this->fieldId) ? 'edit/' . $this->fieldId : 'add')  ; ?>" method="POST" class="publishForm fieldsForm">
+<form action="<?php echo URL; ?>fields/edit/<?php echo ( ($this->fieldId !== NULL) ? $this->fieldId . '/' : '' ) ; ?>" method="POST" class="publishForm fieldsForm">
     <input type="hidden" name="token" value="<?php echo $this->token; ?>" />
     
     <?php foreach($this->fields as $k => $field): ?>    
