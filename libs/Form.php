@@ -1,6 +1,15 @@
 <?php
 
 class Form {
+    /**
+     * We set data to this variable in method input() and then use it in filter()
+     * and validate() methods 
+     * 
+     * @var array
+     */
+    private $_data = array('name' => '', 'val' => '');
+    
+    public $requiredFields = array();
     
     function __construct() {
         if($_POST){
@@ -13,11 +22,42 @@ class Form {
         $_POST  = $this->_stripslashes($_POST);
         
         // TODO: better use Session::destroy()
-        $token = $this->validate( "token", "string" );
-
+        $this->input( 'token' );
+        $this->filter( 'string' );
+        
+        $token = $this->_data['val'];
+        
         if( $token !== Session::get( "token" )){
             throw new Exception("Wrong token");
         }
+    }
+    
+    /**
+     * Set data to private property $this->_data
+     * if $name contains [\d] we use $_POST[$name][\d]
+     * 
+     * @param string $name
+     */
+    public function input( $name ){        
+        $this->_data['name'] = $name;
+        preg_match('/(?<name>\w+)\[(?<index>\d+)\]/', $name, $matches);
+        
+        if($matches){
+            $name = $matches['name'];
+            $index = $matches['index'];
+            
+            if( isset($_POST[$name][$index]) ){
+                $this->_data['val'] = $_POST[$name][$index];
+            }
+        } else {
+            if( isset($_POST[$name]) ){
+                $this->_data['val'] = $_POST[$name];
+            }    
+        }  
+        
+        $this->_data['val'] = trim($this->_data['val']);
+        
+        return $this;
     }
     
     /**
@@ -38,81 +78,56 @@ class Form {
     }
     
     /**
-     * This function returns $_POST[$name] variable, which is filtered according to the type
-     * the function will be used like this:
-     * $age = $this->request->get('age', 'integer');
-     * so the value of variable $age equals (int)$_POST['age']
-     * @param string $name
-     * @param string $type We use three types: string | integer | boolean
-     * @return string
+     * Set data to right type
+     * 
+     * @param string $type
      */
-    function setToRightType($name, $type = null){
-        $val = null;
-        
-        
-        preg_match('/(?<name>\w+)\[(?<index>\d+)\]/', $name, $matches);
-        
-        if($matches){
-            $name = $matches['name'];
-            $index = $matches['index'];
-            
-            if( isset($_POST[$name][$index]) ){
-                $val = $_POST[$name][$index];
-            }
-        } else {
-            if( isset($_POST[$name]) ){
-                $val = $_POST[$name];
-            }    
-        }
-        
-        $val = trim($val);
-        
+    function filter( $type ){
         switch ($type){
             case "string":
-                $val = strval(preg_replace('/[^\p{L}\p{Nd}\d\s_\-\.\%\s]/ui', '', $val));
+                $this->_data['val'] = strval( preg_replace( '/[^\p{L}\p{Nd}\d\s_\-\.\%\s]/ui', 
+                                                     '', 
+                                                     $this->_data['val'] ) );
                 break;
             case "integer":
-                $val = intval($val);
+                $this->_data['val'] = intval( $this->_data['val'] );
+                
                 break;
             case "boolean":
-                $val = !empty($val);
+                $this->_data['val'] = !empty( $this->_data['val'] );
+                
                 break;
             default:
+                
                 break;
-        }
+        } 
 
-        return $val;        
-    }
-    
-    /**
-     * By using this function we can get the name of the file, if the second parameter is defined
-     * or an array according to the first parameter. 
-     * @param string $name
-     * @param string $name1
-     * @return array|string|null
-     */
-    function files($name, $name1 = null){
-        if(!empty($name1) && !empty($_FILES[$name][$name1])){
-            return $_FILES[$name][$name1];
-        } else if(empty($name1) && !empty($_FILES[$name])) {
-            return $_FILES[$name];
-        }
-        return null;
+        return $this;
     }
     
     
-    function validate( $val, $param ){
+    function validate( $param, $val ){
         switch($param){
-            case "required":
-                if( $val == "" ){
-                    throw new Exception("Field is required");
+            case 'max_length':
+                if( strlen( $this->_data['val'] ) > $val ){
+                    throw new Exception( $this->_data['name'] . 'Too long: ' . 
+                            strlen( $this->_data['val'] )  );
                 }
                 
                 break;
             default:
                 break;
         }
+
+        return $this;
+    }
+    
+    function is_required(){
+        if( $this->_data['val'] == '' ){
+            $this->requiredFields[] = $this->_data['name']; 
+            throw new Exception( $this->_data['name'] . ' is required' );   
+        }
         
-        return $val;
+        return $this;
     }
 }

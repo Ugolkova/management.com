@@ -50,16 +50,31 @@ class Fields extends Controller {
                 exit();
             }
             
-            $field['field_type'] = $this->form
-                                        ->setToRightType("field_type", 'string')
-                                        ->validate("required");
-            $field['field_label'] = $this->form
-                                         ->setToRightType("field_label", 'string');
-            $field['field_instructions'] = $this->form
-                                                ->setToRightType("field_instructions", 'string');
-            $field['field_required'] = $this->form
-                                            ->setToRightType("field_required", 'boolean');
-            $field['owner_id'] = $this->form->setToRightType("owner_id", 'integer');                
+            try{
+                $field['field_type'] = $this->form
+                                            ->input( 'field_type' )
+                                            ->filter( 'string' )
+                                            ->is_required();
+                $field['field_label'] = $this->form
+                                             ->input( 'field_label' )
+                                             ->filter( 'string' )
+                                             ->validate( 'max_length', 3 )
+                                             ->is_required();
+                $field['field_instructions'] = $this->form
+                                                    ->input( 'field_instructions' )
+                                                    ->filter( 'string' )
+                                                    ->is_required();
+                $field['field_required'] = $this->form
+                                                ->input( 'field_required' )
+                                                ->filter( 'boolean' );
+                $field['owner_id'] = $this->form
+                                          ->input( 'owner_id' )
+                                          ->filter( 'integer' );                
+            } catch( Exception $e ) {
+                echo $e->getMessage();
+                print_r($this->form->requiredFields);
+                exit;
+            }   
 
             $ft = $this->_getFieldType( $field['field_type'] );
 
