@@ -4,6 +4,8 @@ class View {
     public $title = SITE_NAME;
     public $header = '';
     
+    private $_errorFields = array();
+    
     function __construct() {
         // ...
     }
@@ -15,6 +17,18 @@ class View {
     public function setHeader( $header ){
         $this->title = $header;
     }    
+    
+    public function setErrorFields( $fields ){
+        $this->_errorFields = $fields;
+    }
+    
+    public function isErrorField( $name ){
+        if(in_array($name, $this->_errorFields) ){
+            return TRUE;
+        }
+        
+        return FALSE;
+    }
     
     public function render($name){
         require "views/header.php";

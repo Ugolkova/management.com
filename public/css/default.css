@@ -330,3 +330,7 @@ a.skype{
 .message.success p{
     background-image: url(http://management.com/public/img/success.png);
 }
+input.required,
+textarea.required{
+    border: 1px solid red !important;
+}

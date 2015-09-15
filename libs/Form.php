@@ -7,9 +7,12 @@ class Form {
      * 
      * @var array
      */
-    private $_data = array('name' => '', 'val' => '');
+    private $_fLabel = '';
+    private $_fName = '';
+    private $_fValue = '';
     
-    public $requiredFields = array();
+    public $errorFields = array();
+    public $errorMessages = array();
     
     function __construct() {
         if($_POST){
@@ -21,13 +24,7 @@ class Form {
         // Use stripslashes for both POST and GET arrays
         $_POST  = $this->_stripslashes($_POST);
         
-        // TODO: better use Session::destroy()
-        $this->input( 'token' );
-        $this->filter( 'string' );
-        
-        $token = $this->_data['val'];
-        
-        if( $token !== Session::get( "token" )){
+        if( (string)$_POST['token'] !== Session::get( "token" )){
             throw new Exception("Wrong token");
         }
     }
@@ -38,8 +35,7 @@ class Form {
      * 
      * @param string $name
      */
-    public function input( $name ){        
-        $this->_data['name'] = $name;
+    private function _input( $name ){        
         preg_match('/(?<name>\w+)\[(?<index>\d+)\]/', $name, $matches);
         
         if($matches){
@@ -47,17 +43,15 @@ class Form {
             $index = $matches['index'];
             
             if( isset($_POST[$name][$index]) ){
-                $this->_data['val'] = $_POST[$name][$index];
+                $this->_fValue = $_POST[$name][$index];
             }
         } else {
             if( isset($_POST[$name]) ){
-                $this->_data['val'] = $_POST[$name];
+                $this->_fValue = $_POST[$name];
             }    
         }  
         
-        $this->_data['val'] = trim($this->_data['val']);
-        
-        return $this;
+        $this->_fValue = trim($this->_fValue);        
     }
     
     /**
@@ -82,38 +76,54 @@ class Form {
      * 
      * @param string $type
      */
-    function filter( $type ){
+    private function _filter( $type ){
         switch ($type){
             case "string":
-                $this->_data['val'] = strval( preg_replace( '/[^\p{L}\p{Nd}\d\s_\-\.\%\s]/ui', 
-                                                     '', 
-                                                     $this->_data['val'] ) );
+                $this->_fValue = strval( $this->_fValue );
                 break;
             case "integer":
-                $this->_data['val'] = intval( $this->_data['val'] );
+                $this->_fValue = intval( $this->_fValue );
                 
                 break;
             case "boolean":
-                $this->_data['val'] = !empty( $this->_data['val'] );
+                $this->_fValue = !empty( $this->_fValue );
                 
                 break;
             default:
                 
                 break;
         } 
-
-        return $this;
     }
     
     
-    function validate( $param, $val ){
+    private function _setRule( $param ){
+        $val = '';
+        preg_match( '/(?<param>\w+)\[(?<val>\w+)\]$/', $param, $matches);
+        if( $matches ){
+            $param = $matches['param'];
+            $val = $matches['val'];
+        }
+        
         switch($param){
             case 'max_length':
-                if( strlen( $this->_data['val'] ) > $val ){
-                    throw new Exception( $this->_data['name'] . 'Too long: ' . 
-                            strlen( $this->_data['val'] )  );
+                if( strlen( $this->_fValue ) > (int)$val ){
+                    $this->errorMessages[] = $this->_fLabel . ': max length - ' . $val;
+                    $this->errorFields[] = $this->_fName;
                 }
                 
+                break;
+            case 'min_length':
+                if( strlen( $this->_fValue ) < (int)$val ){
+                    $this->errorMessages[] = $this->_fLabel . ': min length - ' . $val;
+                    $this->errorFields[] = $this->_fName;
+                }
+                
+                break;                
+            case 'required':
+                if( $this->_fValue == ''){
+                    $this->errorMessages[] = $this->_fLabel . ': is required';
+                    $this->errorFields[] = $this->_fName;
+                }
                 break;
             default:
                 break;
@@ -121,13 +131,22 @@ class Form {
 
         return $this;
     }
-    
-    function is_required(){
-        if( $this->_data['val'] == '' ){
-            $this->requiredFields[] = $this->_data['name']; 
-            throw new Exception( $this->_data['name'] . ' is required' );   
+        
+    public function validate( $name, $label, $type, $rules = '' ){
+        $this->_fLabel = $label;
+        $this->_fName = $name;
+        
+        $this->_input( $name );
+        
+        // Set to needed type, e.g. we get '12 years old' for field 'age'
+        // but we need just digits ($type == 'integer')
+        $this->_filter( $type );
+        
+        $rules = explode('|', $rules);
+        foreach ( $rules as $rule ){
+            $this->_setRule( $rule );
         }
         
-        return $this;
+        return $this->_fValue;
     }
 }

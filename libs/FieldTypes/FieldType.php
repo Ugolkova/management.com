@@ -13,14 +13,16 @@ abstract class FieldType {
      * @param string $label
      * @param string $short_name
      * @param string $value
+     * @param boolean $required
      * @param string $instruction
      */
-    protected function _setOptions($label, $short_name, $value = '', $instruction = ''){
+    protected function _setOptions($label, $short_name, $value = '', $required = FALSE, $instruction = ''){
         $this->_options[] = array(
             'label'       => $label,
             'short_name'  => $short_name,
             'value'       => $value,
-            'instruction' => $instruction
+            'instruction' => $instruction,
+            'required'    => $required
         );
     }    
     
