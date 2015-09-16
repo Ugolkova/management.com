@@ -22,6 +22,39 @@ class View {
         $this->_errorFields = $fields;
     }
     
+    public function printMessage(){
+        $msg_block = '';
+
+        if( Session::get('msg_success') || Session::get('msg_error') ){
+            $msg_block .= '<div class="message"><i>x</i>';
+            if( Session::get( 'msg_success' ) ){
+                $msg_success = Session::get( 'msg_success' );
+                if( is_string( $msg_success ) ){ 
+                    $msg_block .= '<p class="success">' . $msg_success . '</p>';
+                } else if( is_array( $msg_success ) ){
+                    foreach($msg_success as $m_success){
+                        $msg_block .= '<p class="success">' . $m_success . '</p>';
+                    }
+                }
+            }
+            
+            if( Session::get( 'msg_error' ) ){
+                $msg_error = Session::get( 'msg_error' );
+                if(is_string( $msg_error ) ){ 
+                    $msg_block .= '<p class="error">' . $msg_error . '</p>';
+                } else if( is_array( $msg_error ) ){
+                    foreach($msg_error as $m_error){
+                        $msg_block .= '<p class="error">' . $m_error . '</p>';
+                    }
+                }
+            }
+            
+            $msg_block .= '</div>';
+        }
+        
+        return $msg_block;
+    }
+    
     public function isErrorField( $name ){
         if(in_array($name, $this->_errorFields) ){
             return TRUE;

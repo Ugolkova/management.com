@@ -13,7 +13,7 @@ define('DB_NAME', 'management');
 define('DB_USER', 'root');
 define('DB_PASS', 'root');
 
-define("COUNT_ENTRIES_ON_PAGE", 3);
+define("COUNT_ENTRIES_ON_PAGE", 5);
 
 define('HASH_GENERAL_KEY', 'gf<<qJ(&oeXehfE');
 define('HASH_PASSWORD_KEY', 'catsFLYhigh2000miles');

@@ -15,6 +15,11 @@ class Fields extends Controller {
     }
     
     public function get_list( $page = null ){        
+        Session::init();
+        Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
+        $this->view->token = Session::get( 'token' );  
+        
+        
         if(preg_match('/^p(\d+)$/', $page, $matches) === 1){
             $page = (int)$matches[1];
         } else {
@@ -47,7 +52,7 @@ class Fields extends Controller {
                 $this->form = new Form();
             } catch (Exception $e) {
                 header( "location: " . $_SERVER['HTTP_REFERER'] );
-                Session::set( 'message', array('error' => array($e->getMessage())) );
+                Session::set( 'msg_error', array($e->getMessage()) );
                 exit();
             }
             
@@ -90,15 +95,15 @@ class Fields extends Controller {
             if( empty( $this->form->errorMessages ) ){
                 try{
                     $field_id = $this->model->save( $field );
-                    Session::set( 'message', array('success' => "Field successfully added") );
+                    Session::set( 'msg_success', "Field successfully added" );
                     header( "location: " . URL . "fields/edit/" . $field_id );
                 } catch( Exception $e ){
-                    Session::set( 'message', array('error' => $e->getMessage()) );
+                    Session::set( 'msg_error', $e->getMessage() );
                     header( "location: " . URL . "fields/get_list/" );
                 }
             } else {
                 Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
-                Session::set( 'message', array('error' => $this->form->errorMessages) );
+                Session::set( 'msg_error', $this->form->errorMessages );
                 $this->view->token = Session::get( 'token' );  
                 $this->view->setErrorFields( $this->form->errorFields );
             }            
@@ -131,52 +136,25 @@ class Fields extends Controller {
      */
     public function edit( $field_id = null ){ 
         require_once LIBS . 'FieldTypes/FieldType.php';
-
+        
         if( isset( $_POST['submit'] ) ){
+            // Check POST data
             try{
                 $this->form = new Form();
             } catch (Exception $e) {
                 header( "location: " . $_SERVER['HTTP_REFERER'] );
-                Session::set( 'message', array('error' => array($e->getMessage())) );
+                Session::set( 'msg_error', array($e->getMessage()) );
                 exit();
             }
             
             $msg_success = [];
             $msg_error = [];    
+            $errorMessages = [];
             
             $countEntries = COUNT($_POST['field_id']);
             for( $i = 0; $i < $countEntries; $i++ ){
-                /*$f_id = $this->form->setToRightType("field_id[$i]", 'integer');
+                $this->form->errorMessages = array();
                 
-                $field['field_type'] = $this->form
-                                            ->setToRightType("field_type[$i]", 'string');
-                $field['field_label'] = $this->form
-                                             ->setToRightType("field_label[$i]", 'string');
-                $field['field_instructions'] = $this->form
-                                                    ->setToRightType("field_instructions[$i]", 'string');
-                $field['field_required'] = $this->form
-                                                ->setToRightType("field_required[$i]", 'boolean');
-                $field['owner_id'] = $this->form->setToRightType("owner_id[$i]", 'integer');                
-                
-                $ft = $this->_getFieldType( $field['field_type'] );
-                
-                $field_settings = [];
-                foreach( $ft['options'] as $option ){
-                    $field_settings[$option['short_name']] = 
-                            $this->form->setToRightType( $option['short_name'] . "[$i]" );
-                }
-
-                $field['field_settings'] = serialize($field_settings);
-               
-                $fields[] = $field;
-                try{
-                    $this->model->save( $field, $f_id );
-                    $msg_success[] = "Field #" . $f_id . " successfully updated";
-                } catch( Exception $e ){
-                    $msg_error[] = $e->getMessage();
-                }    
-                */
-
                 $field['field_id'] = $this->form->validate('field_id[' . $i . ']', 
                                                            'Field ID',
                                                            'integer', 
@@ -219,16 +197,7 @@ class Fields extends Controller {
                 }
 
                 $field['field_settings'] = serialize($field_settings);
-                
-                $fields[] = $field;
-                
-                /*try{
-                    $this->model->save( $field, $f_id );
-                    $msg_success[] = "Field #" . $f_id . " successfully updated";
-                } catch( Exception $e ){
-                    $msg_error[] = $e->getMessage();
-                }*/
-                
+                                
                 // If we have any validation errors we can save data
                 if( empty( $this->form->errorMessages ) ){
                     try{
@@ -238,34 +207,24 @@ class Fields extends Controller {
                         $msg_error[] = $e->getMessage();
                     }
                 } else {
-                    print_r($this->form->errorMessages);
-                    array_merge($msg_error, $this->form->errorMessages);
-                } 
-            }
-            echo 'test:<pre>';
-            print_r($msg_error);
-            echo '</pre>';
+                    $errorMessages = array_merge( $errorMessages, $this->form->errorMessages );
+                }
+                
+                
+                $field['field_settings'] = unserialize($field['field_settings']);
+                $fields[] = $field;
+            }            
+                        
+            $fieldsErrors = array_keys( array_flip( $errorMessages ) );
             
+            if( !empty( $fieldsErrors ) ){
+                $this->view->setErrorFields( $this->form->errorFields );
+            }    
             
-            
-            if( !empty( $msg_success ) ){
-                Session::set( 'message', array('success' => $msg_success) );
-            } 
-            elseif( !empty( $msg_error ) ) {
-                Session::set( 'message', array('error' => $msg_error) );     
-            } 
-            
-            if( $field_id === NULL ) {
-                //header( "location: " . URL . "fields/get_list/" );
-            } else {
-                header( "location: " . $_SERVER['REQUEST_URI'] );
-            }
+            Session::set( 'msg_success', $msg_success );
+            Session::set( 'msg_error', $fieldsErrors ); 
             
         } else {
-            Session::init();
-            Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
-            $this->view->token = Session::get( 'token' );            
-
             $fields = array();
             
             /*
@@ -298,11 +257,16 @@ class Fields extends Controller {
             }
             
             if( empty($fields) ){
-                Session::set('message', array('error' => 'Fields ( #' . implode(', #', $field_ids) . ' ) not found.'));
+                Session::delete( 'msg_error' );
+                Session::delete( 'msg_success' );
+                
                 header( "location: " . URL . "fields/get_list/" );
                 die();
             }
         }
+
+        Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
+        $this->view->token = Session::get( 'token' );            
                 
         // Set settings value we already have
         $fieldTypes = $this->_getFieldTypes();
@@ -359,4 +323,27 @@ class Fields extends Controller {
         return $fieldTypes;
     }
 
+    public function delete(){
+        if( isset( $_POST['submit_action'] ) ){
+            // Check POST data
+            try{
+                $this->form = new Form();
+            } catch (Exception $e) {
+                Session::set( 'msg_error', array($e->getMessage()) );
+                header( "location: " . $_SERVER['HTTP_REFERER'] );
+                exit();
+            }
+
+            if( COUNT($_POST['field_id']) ){
+                print_r($_POST['field_id']);
+                foreach($_POST['field_id'] as $field_id){
+                    $this->model->delete( $field_id );
+                    Session::set('msg_success', 'Fields are successfully deleted.');
+                }    
+            } else {
+                Session::set('msg_error', 'Any fields');
+            }
+            header( "location: " . URL . "fields/get_list/" );
+        }    
+    }
 }

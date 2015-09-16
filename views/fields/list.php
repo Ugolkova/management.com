@@ -1,3 +1,5 @@
+<a href="<?php echo URL; ?>fields/add" class="button add">Add field</a>
+
 <form action="<?php echo URL; ?>/users/search" class="searchForm">
     <fieldset>
         <legend>Total fields: <?php echo $this->fieldsCount; ?></legend>
@@ -16,13 +18,14 @@
     </fieldset>
 </form>    
 
-<?php echo $this->pagination; ?>
-
 <?php if( empty($this->fields) ) : ?>
     <p>There are no entries matching the criteria you selected.</p>
 <?php else: ?>               
 <form action="<?php echo URL . "fields/edit/" ?>" method="POST">
-    <table>
+    <?php echo $this->pagination; ?>
+    
+    <input type="hidden" name="token" value="<?php echo $this->token; ?>" />
+    <table class="fields">
         <thead>
             <tr>
                 <th>#</th>

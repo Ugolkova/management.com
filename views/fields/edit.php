@@ -15,8 +15,8 @@ $(document).ready(function(){
     
     <?php foreach($this->fields as $k => $field): ?>    
     <table>
-        <input type="hidden" name="owner_id[]" value="<?php echo $field['owner_id']; ?>" />
-        <input type="hidden" name="field_id[]" value="<?php echo $field['field_id']; ?>" />
+        <input type="hidden" name="owner_id[<?php echo $k; ?>]" value="<?php echo $field['owner_id']; ?>" />
+        <input type="hidden" name="field_id[<?php echo $k; ?>]" value="<?php echo $field['field_id']; ?>" />
         <thead>
             <tr>
                 <th colspan="2">Fields Settings</th>
@@ -26,7 +26,7 @@ $(document).ready(function(){
             <tr>
                 <td><label>Type</label></td>
                 <td>
-                    <select name="field_type[]">
+                    <select name="field_type[<?php echo $k; ?>]">
                     <?php foreach($this->fieldTypes as $ft): ?>
                         <option value="<?php echo $ft['type']; ?>"<?php if($ft['type'] == $field['field_type']): ?> selected<?php endif; ?>>
                             <?php echo ucfirst($ft['type']); ?>
@@ -38,11 +38,11 @@ $(document).ready(function(){
 
             <tr>
                 <td><label class="required">Field Label</label></td>
-                <td><input type="text" name="field_label[]" value="<?php echo $field['field_label']; ?>" /></td>
+                <td><input type="text" name="field_label[<?php echo $k; ?>]" value="<?php echo $field['field_label']; ?>" class="<?php echo $this->isErrorField("field_label[$k]") ? 'error' : ''; ?>" /></td>
             </tr>
             <tr>
                 <td><label class="required">Field Instructions</label></td>
-                <td><textarea name="field_instructions[]" rows="4"><?php echo $field['field_instructions']; ?>
+                <td><textarea name="field_instructions[<?php echo $k; ?>]" rows="4" class="<?php echo $this->isErrorField("field_instructions[$k]") ? 'error' : ''; ?>"><?php echo $field['field_instructions']; ?>
 </textarea></td>
             </tr>
             <tr>
@@ -77,9 +77,9 @@ $(document).ready(function(){
                         <small><?php echo $option['instruction']; ?></small>
                         <?php endif; ?>
 
-                        <input type="text" name="<?php echo $option['short_name'] ?>[]" 
+                        <input type="text" name="<?php echo $option['short_name'] ?>[<?php echo $k; ?>]" 
                                value="<?php echo (isset($field['field_settings'][$option['short_name']]) ? 
-                               $field['field_settings'][$option['short_name']] : ''); ?>" /></td>
+                               $field['field_settings'][$option['short_name']] : ''); ?>" class="<?php echo $this->isErrorField( $option['short_name'] . "[$k]") ? 'error' : ''; ?>" /></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>    

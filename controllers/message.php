@@ -7,7 +7,8 @@ class Message extends Controller {
     }
 
     function remove(){
-        Session::set( 'message', array() );
+        Session::delete( 'msg_success' );
+        Session::delete( 'msg_error' );
     }
 }
 

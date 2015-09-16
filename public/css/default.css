@@ -27,7 +27,8 @@ section{
     border-radius: 10px;
         -moz-border-radius: 10px;
             -webkit-border-radius: 10px;
-    padding: 30px 20px 10px;
+    padding: 50px 20px 10px;
+    position: relative;
     margin: 0 auto;
 }
 section > div{
@@ -99,7 +100,13 @@ hr{
 }
 
 form{
+    margin: 10px 0px;
+    padding: 0px 0px 30px;
     position: relative;
+}
+form.searchForm{
+    margin: 0px;
+    padding: 0px;
 }
 
 input[type="submit"]{
@@ -225,6 +232,9 @@ a.skype{
     position: absolute;
     right: 0px;
 }
+.pagination + .tableSubmit{
+    bottom: 30px;
+}
 
 .publishForm p{
     border-bottom: 1px solid #cdd3de;
@@ -316,21 +326,40 @@ a.skype{
     position: relative;
     right: -20px;
 }
-.message.error p,
-.message.success p{
+.message p.error,
+.message p.success{
     background-position: center left;
     background-repeat: no-repeat;
     line-height: 25px;
     margin-left: -25px;
     padding-left: 25px;    
 }
-.message.error p{
+.message p.error{
     background-image: url(http://management.com/public/img/error.png);
 }
-.message.success p{
+.message p.success{
     background-image: url(http://management.com/public/img/success.png);
 }
-input.required,
-textarea.required{
+input.error,
+textarea.error{
     border: 1px solid red !important;
+}
+table.fields td:first-child,
+table.fields td:last-child{
+    width: 50px;
+}
+.button{
+    background: #94144F;
+    border-radius: 5px;
+    color: #FFF;
+    float: right;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 15px;
+    position: relative;
+    z-index: 3;
+}
+.button.add{
+    right: 0px;
+    top: -103px;
 }

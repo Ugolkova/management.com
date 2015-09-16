@@ -65,11 +65,12 @@ class Pagination {
         if( ( $curPageNum + $this->_interval ) < $totalNum ){
             $html .= '<a href="' . $link .  $totalNum . '/" class="last">' . $this->_lastLink . '</a>';
         }
-        
-        if( $html != '' ){
+
+        if( $html != '' && $totalNum > 1 ){
             return '<div class="pagination">' . $html . '</div>';
+        } else {
+            return '';
         }
         
-        return $html;
     }
 }

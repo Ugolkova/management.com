@@ -23,7 +23,7 @@ $(document).ready(function(){
             <tr>
                 <td><label>Type</label></td>
                 <td>
-                    <select name="field_type" class="<?php echo $this->isErrorField('field_type') ? 'required' : ''; ?>">
+                    <select name="field_type" class="<?php echo $this->isErrorField('field_type') ? 'error' : ''; ?>">
                     <?php foreach($this->fieldTypes as $ft): ?>
                         <option value="<?php echo $ft['type']; ?>"<?php if($ft['type'] == $this->field['field_type']): ?> selected<?php endif; ?>>
                             <?php echo ucfirst($ft['type']); ?>
@@ -35,11 +35,11 @@ $(document).ready(function(){
 
             <tr>
                 <td><label class="required">Field Label</label></td>
-                <td><input type="text" name="field_label" value="<?php echo $this->field['field_label']; ?>" class="<?php echo $this->isErrorField('field_label') ? 'required' : ''; ?>" /></td>
+                <td><input type="text" name="field_label" value="<?php echo $this->field['field_label']; ?>" class="<?php echo $this->isErrorField('field_label') ? 'error' : ''; ?>" /></td>
             </tr>
             <tr>
                 <td><label class="required">Field Instructions</label></td>
-                <td><textarea name="field_instructions" rows="4" class="<?php echo $this->isErrorField('field_instructions') ? 'required' : ''; ?>"><?php echo $this->field['field_instructions']; ?>
+                <td><textarea name="field_instructions" rows="4" class="<?php echo $this->isErrorField('field_instructions') ? 'error' : ''; ?>"><?php echo $this->field['field_instructions']; ?>
 </textarea></td>
             </tr>
             <tr>

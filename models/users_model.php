@@ -65,7 +65,18 @@ class Users_model extends Model {
     }
     
     public function add(){
+        echo 123;
+        print_r($this->getFieldsData());
         return $this->request->post('user_name', 'string');
+    }
+    
+    public function getFieldsData(){
+        $fields = $this->db->select('SELECT * FROM fields WHERE owner_id=:owner_id', array(':owner_id' => 1));
+        print_r($fields);
+        /*foreach($fields as $field){
+            $v = $this->db->select('SELECT field_' . $f_id . ' FROM user_fields WHERE user_id=:user_id', array(':user_id' => 1));
+            echo $v . "<br />";
+        }*/
     }
 }
 

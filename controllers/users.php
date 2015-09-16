@@ -60,6 +60,9 @@ class Users extends Controller {
                 echo $this->model->add();
             }
         } else {
+            //$userFields = $this->model->getUserFields();
+            //print_r( $userFields );
+            $this->model->add();
             $this->view->render("users/add");
         }    
     }

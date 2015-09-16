@@ -13,32 +13,8 @@
     </head>
     <body>
         
-    <?php   
-    $message = Session::get( 'message' );
+    <?php echo $this->printMessage(); ?>
     
-    if( !empty($message) ):
-        if( isset( $message['error'] ) && $message['error'] != '' ): ?>
-        <div class="message error">
-            <i>x</i>
-            <?php if(is_string($message['error']) ) : ?>
-            <p><?php echo $message['error']; ?></p>               
-            <?php elseif( is_array($message['error']) ) :
-                foreach($message['error'] as $error): ?>
-            <p><?php echo $error; ?></p>   
-            <?php endforeach; endif; ?>
-        </div>        
-        <?php elseif( isset( $message['success'] ) && $message['success'] != '' ): ?>
-        <div class="message success">
-            <i>x</i>
-            <?php if(is_string($message['success']) ) : ?>
-            <p><?php echo $message['success']; ?></p>               
-            <?php elseif( is_array($message['success']) ) :
-                foreach($message['success'] as $success): ?>
-            <p><?php echo $success; ?></p>   
-            <?php endforeach; endif; ?>
-        </div> 
-    <?php endif; endif; ?>
-
     <section>            
         <h1><?php echo $this->header; ?></h1>   
             <div>

@@ -1,3 +1,5 @@
+<a href="<?php echo URL; ?>fields/add" class="button add">Add field</a>
+
 <form action="<?php echo URL; ?>/users/search" class="searchForm">
     <fieldset>
         <legend>Total users: <?php echo $this->usersCount; ?></legend>
@@ -22,12 +24,12 @@
     </fieldset>
 </form>    
 
-<?php echo $this->pagination; ?>
-
 <?php if( empty($this->users) ) : ?>
     <p>There are no entries matching the criteria you selected.</p>
 <?php else: ?>               
 <form action="<?php echo URL . "edit/" ?>" method="POST">
+    <?php echo $this->pagination; ?>
+    
     <table>
         <thead>
             <tr>

@@ -7,9 +7,14 @@ class Database extends PDO {
         parent::__construct($DB_TYPE.':host='.$DB_HOST.';dbname='.$DB_NAME, $DB_USER, $DB_PASS);
     }
 
+    public function alterTable( $sql ){
+        $sth = $this->prepare($sql);
+        $sth->execute();
+    }
     public function select($sql, $array = array(), $fetchMode = PDO::FETCH_ASSOC){
         $sth = $this->prepare($sql);
         foreach($array as $key=>$value){
+            echo $key . " " . $value;
             $sth->bindValue($key, $value);
         }
         $q = $sth->execute();
