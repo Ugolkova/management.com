@@ -1,4 +1,4 @@
-    <script>
+<script>
 $(document).ready(function(){
     $('select[name*=field_type]').change(function(){
         var fieldType = $(this).val();
@@ -42,7 +42,7 @@ $(document).ready(function(){
             </tr>
             <tr>
                 <td><label class="required">Field Instructions</label></td>
-                <td><textarea name="field_instructions[<?php echo $k; ?>]" rows="4" class="<?php echo $this->isErrorField("field_instructions[$k]") ? 'error' : ''; ?>"><?php echo $field['field_instructions']; ?>
+                <td><textarea name="field_instruction[<?php echo $k; ?>]" rows="4" class="<?php echo $this->isErrorField("field_instruction[$k]") ? 'error' : ''; ?>"><?php echo $field['field_instruction']; ?>
 </textarea></td>
             </tr>
             <tr>

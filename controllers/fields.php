@@ -15,7 +15,6 @@ class Fields extends Controller {
     }
     
     public function get_list( $page = null ){        
-        Session::init();
         Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
         $this->view->token = Session::get( 'token' );  
         
@@ -38,6 +37,72 @@ class Fields extends Controller {
     }
     
     
+    protected function _validateField( $field_id = FALSE ){
+        try{
+            $this->form = new Form();
+        } catch (Exception $e) {
+            header( "location: " . $_SERVER['HTTP_REFERER'] );
+            Session::set( 'msg_error', array($e->getMessage()) );
+            exit();
+        }
+        
+        
+        if( isset( $_POST['field_id'][$field_id] ) ){
+            $field_id = "[" . $field_id . "]";
+            
+            $field['field_id'] = $this->form->validate('field_id' .  $field_id, 
+                                                       'Field ID',
+                                                       'integer', 
+                                                       'required');   
+        } else {
+            $field_id = "";
+        }
+        
+        $field['field_type'] = $this->form->validate('field_type' . $field_id, 
+                                                      'Field Type',
+                                                      'string', 
+                                                      'required');
+        $field['field_label'] = $this->form->validate('field_label' . $field_id, 
+                                                      'Field Label', 
+                                                      'string', 
+                                                      'required|max_length[35]|min_length[3]');
+        $field['field_instruction'] = $this->form->validate('field_instruction' . $field_id, 
+                                                             'Field Instruction', 
+                                                             'string', 
+                                                             'required');
+        $field['field_required'] = $this->form->validate('field_required' . $field_id, 
+                                                         'Field Required', 
+                                                         'boolean');
+        $field['owner_id'] = $this->form->validate('owner_id' . $field_id, 
+                                                   'Owner ID', 
+                                                   'integer', 
+                                                   'required');
+
+        $ft = $this->_getFieldType( $field['field_type'] );
+
+        $field_settings = [];
+        foreach( $ft['options'] as $option ){
+            $required = $option['required'] ? 'required' : '';
+            $field_settings[$option['short_name']] = 
+                $this->form->validate( $option['short_name'] . $field_id,
+                                       $option['label'],
+                                       'string',
+                                       $required);
+        }
+
+        if( isset($field_settings['options']) ){
+            $options = explode(FIELD_OPTIONS_DELIMITER, $field_settings['options']);
+            foreach($options as &$option){
+                $option = trim( $option );
+            }
+            $field_settings['options'] = $options;
+        }            
+
+        $field['field_settings'] = serialize($field_settings);
+        
+        return $field;
+    }
+    
     /**
      * Add field
      * 
@@ -48,48 +113,7 @@ class Fields extends Controller {
         require_once LIBS . 'FieldTypes/FieldType.php';
 
         if( isset( $_POST['submit'] ) ){
-            try{
-                $this->form = new Form();
-            } catch (Exception $e) {
-                header( "location: " . $_SERVER['HTTP_REFERER'] );
-                Session::set( 'msg_error', array($e->getMessage()) );
-                exit();
-            }
-            
-
-            $field['field_type'] = $this->form->validate('field_type', 
-                                                          'Field Type',
-                                                          'string', 
-                                                          'required');
-            $field['field_label'] = $this->form->validate('field_label', 
-                                                          'Field Label', 
-                                                          'string', 
-                                                          'required|max_length[35]|min_length[3]');
-            $field['field_instructions'] = $this->form->validate('field_instructions', 
-                                                                 'Field Instructions', 
-                                                                 'string', 
-                                                                 'required');
-            $field['field_required'] = $this->form->validate('field_required', 
-                                                             'Field Required', 
-                                                             'boolean');
-            $field['owner_id'] = $this->form->validate('owner_id', 
-                                                       'Owner ID', 
-                                                       'integer', 
-                                                       'required');
-
-            $ft = $this->_getFieldType( $field['field_type'] );
-
-            $field_settings = [];
-            foreach( $ft['options'] as $option ){
-                $required = $option['required'] ? 'required' : '';
-                $field_settings[$option['short_name']] = 
-                    $this->form->validate( $option['short_name'],
-                                           $option['label'],
-                                           'string',
-                                           $required);
-            }
-
-            $field['field_settings'] = serialize($field_settings);
+            $field = $this->_validateField();
             
             // If we have any validation errors we can save data
             if( empty( $this->form->errorMessages ) ){
@@ -107,6 +131,12 @@ class Fields extends Controller {
                 $this->view->token = Session::get( 'token' );  
                 $this->view->setErrorFields( $this->form->errorFields );
             }            
+            
+            if( isset( $field['field_settings']['options'] ) ){
+                $field['field_settings']['options'] = 
+                        implode( FIELD_OPTIONS_DELIMITER, 
+                                 $field['field_settings']['options'] );
+            }    
         } else {  
             Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
             $this->view->token = Session::get( 'token' );  
@@ -114,11 +144,13 @@ class Fields extends Controller {
             $field = array(
                 'field_type' => '',
                 'field_label' => '',
-                'field_instructions' => '',
+                'field_instruction' => '',
                 'field_required' => false
             );            
         }
 
+        
+        
         $fieldTypes = $this->_getFieldTypes();
                 
         $this->view->setTitle("Add Field" );
@@ -155,48 +187,7 @@ class Fields extends Controller {
             for( $i = 0; $i < $countEntries; $i++ ){
                 $this->form->errorMessages = array();
                 
-                $field['field_id'] = $this->form->validate('field_id[' . $i . ']', 
-                                                           'Field ID',
-                                                           'integer', 
-                                                           'required');
-                
-                $field['field_type'] = $this->form
-                                            ->validate('field_type[' . $i . ']', 
-                                                       'Field Type',
-                                                       'string', 
-                                                       'required');
-                $field['field_label'] = $this->form
-                                             ->validate('field_label[' . $i . ']', 
-                                                        'Field Label', 
-                                                        'string', 
-                                                        'required|max_length[35]|min_length[3]');
-                $field['field_instructions'] = $this->form
-                                                    ->validate('field_instructions[' . $i . ']', 
-                                                               'Field Instructions', 
-                                                               'string', 
-                                                               'required');
-                $field['field_required'] = $this->form
-                                                ->validate('field_required[' . $i . ']', 
-                                                           'Field Required', 
-                                                           'boolean');
-                $field['owner_id'] = $this->form->validate('owner_id[' . $i . ']', 
-                                                           'Owner ID', 
-                                                           'integer', 
-                                                           'required');
-
-                $ft = $this->_getFieldType( $field['field_type'] );
-
-                $field_settings = [];
-                foreach( $ft['options'] as $option ){
-                    $required = $option['required'] ? 'required' : '';
-                    $field_settings[$option['short_name']] = 
-                        $this->form->validate( $option['short_name'] . "[$i]",
-                                               $option['label'],
-                                               'string',
-                                               $required);
-                }
-
-                $field['field_settings'] = serialize($field_settings);
+                $field = $this->_validateField( $i );
                                 
                 // If we have any validation errors we can save data
                 if( empty( $this->form->errorMessages ) ){
@@ -212,6 +203,13 @@ class Fields extends Controller {
                 
                 
                 $field['field_settings'] = unserialize($field['field_settings']);
+                
+                if( isset( $field['field_settings']['options'] ) ){
+                    $field['field_settings']['options'] = 
+                            implode( FIELD_OPTIONS_DELIMITER, 
+                                     $field['field_settings']['options'] );
+                }
+                
                 $fields[] = $field;
             }            
                         
@@ -225,35 +223,29 @@ class Fields extends Controller {
             Session::set( 'msg_error', $fieldsErrors ); 
             
         } else {
-            $fields = array();
-            
-            /*
-             * If we have field id in URL we use it for getting $field,
-             * otherwise we use (array)$_POST['field_id']
-             */
             if( $field_id == null ){
                 $field_ids = (array)$_POST['field_id'];
-                if( !is_array( $field_ids ) || empty( $field_ids ) ){
-                    header( "location: " . URL . "fields/get_list/" );
-                }
-                foreach( $field_ids as $f_id ){
-                    $field = $this->model->getField( $f_id )[0];
-                    $field['field_settings'] = unserialize($field['field_settings']);
-                    
-                    if( $field ){
-                        $fields[] = $field;
-                    }
-                }
             } else {
-                $field_ids[] = $field_id; 
-                $field = $this->model->getField( $field_id );  
+                $field_ids[] = $field_id;
+            }
+            
+            if( empty( $field_ids ) ){
+                header( "location: " . URL . "fields/get_list/" );
+            }
+            
+            $fields = array();
+            foreach( $field_ids as $f_id ){
+                $field = $this->model->getEntry( $f_id )[0];
+                $field['field_settings'] = unserialize($field['field_settings']);
+                if( isset( $field['field_settings']['options'] ) ){
+                    $field['field_settings']['options'] = 
+                            implode( FIELD_OPTIONS_DELIMITER, 
+                                     $field['field_settings']['options'] );
+                }
+
                 if( $field ){
-                    $field = $field[0];
-                    $field['field_settings'] = unserialize($field['field_settings']);
-                    if( $field ){
-                        $fields[] = $field;
-                    }
-                }    
+                    $fields[] = $field;
+                }
             }
             
             if( empty($fields) ){
@@ -335,7 +327,6 @@ class Fields extends Controller {
             }
 
             if( COUNT($_POST['field_id']) ){
-                print_r($_POST['field_id']);
                 foreach($_POST['field_id'] as $field_id){
                     $this->model->delete( $field_id );
                     Session::set('msg_success', 'Fields are successfully deleted.');

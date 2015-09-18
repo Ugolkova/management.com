@@ -64,19 +64,79 @@ class Users_model extends Model {
         return $this->_usersCount;
     }
     
-    public function add(){
-        echo 123;
-        print_r($this->getFieldsData());
-        return $this->request->post('user_name', 'string');
+    public function getEntry( $user_id ){
+        $owner_fields = $this->_getOwnerFields();
+        $fields = '';
+        foreach($owner_fields as $field){
+            $fields .= 'uf.' . $field['name'] . ',';
+        }
+        $fields = rtrim( $fields, ',' );
+        
+        $user = $this->db->select( 'SELECT u.*, ' . $fields .' FROM users as u 
+                                    INNER JOIN user_fields uf ON uf.user_id = u.user_id
+                                    WHERE u.user_id=:user_id 
+                                    AND u.owner_id=:owner_id AND uf.owner_id = u.owner_id', 
+                                    array('user_id' => $user_id,
+                                          'owner_id' => Session::get('user_id')   ) );
+        
+        if( !$user ){
+            return FALSE;
+        }
+            
+        return $user;
+    }
+    
+    private function _getOwnerFields(){
+        $fields = $this->db->select( 'SELECT CONCAT("field_", field_id) as name FROM fields WHERE owner_id=:owner_id', 
+                                     array('owner_id' => Session::get('user_id') ) );
+        return $fields;
     }
     
     public function getFieldsData(){
-        $fields = $this->db->select('SELECT * FROM fields WHERE owner_id=:owner_id', array(':owner_id' => 1));
-        print_r($fields);
-        /*foreach($fields as $field){
-            $v = $this->db->select('SELECT field_' . $f_id . ' FROM user_fields WHERE user_id=:user_id', array(':user_id' => 1));
-            echo $v . "<br />";
-        }*/
+        $fields = $this->db->select( 'SELECT * FROM fields WHERE owner_id=:owner_id', 
+                                     array('owner_id' => Session::get('user_id') ) );  
+        return $fields;
     }
+    
+    public function save( $user ){
+        if( isset( $user['user_id'] ) ){
+            $user_id = $user['user_id'];
+            unset( $user['user_id'] );
+        }
+
+        // Data Array for table 'users'
+        $u_table_data = array();
+        // Data Array for table 'user_fields'
+        $uf_table_data = array();
+        
+        $user_keys = array_keys( $user );
+        foreach( $user_keys as $key ){
+            if( preg_match('/^field_\d+$/', $key) ){
+                $uf_table_data[$key] = $user[$key];
+            } else {
+                $u_table_data[$key] = $user[$key];
+            }
+        }
+
+       if( $user_id ){
+            if( !$this->db->update( 'users', $u_table_data, 'user_id=' . $user_id )){
+                throw new Exception("Wrong data for user #" . $user_id);
+            }
+            if( !$this->db->update( 'user_fields', 
+                                    $uf_table_data, 
+                                    'user_id=' . $user_id . ' AND owner_id=' . 
+                                        Session::get('user_id')  )){
+                throw new Exception("Wrong data for user fields #" . $user_id);
+            } 
+        } else {
+            $user_id = $this->db->insert( 'users', $user );
+            if( !$user_id ){
+                throw new Exception( "Can't add the user" );
+            }            
+        }  
+        
+        return $user_id;
+    }
+    
 }
 

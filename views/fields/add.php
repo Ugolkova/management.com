@@ -39,7 +39,7 @@ $(document).ready(function(){
             </tr>
             <tr>
                 <td><label class="required">Field Instructions</label></td>
-                <td><textarea name="field_instructions" rows="4" class="<?php echo $this->isErrorField('field_instructions') ? 'error' : ''; ?>"><?php echo $this->field['field_instructions']; ?>
+                <td><textarea name="field_instruction" rows="4" class="<?php echo $this->isErrorField('field_instruction') ? 'error' : ''; ?>"><?php echo $this->field['field_instruction']; ?>
 </textarea></td>
             </tr>
             <tr>

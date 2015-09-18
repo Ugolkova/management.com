@@ -14,7 +14,6 @@ class Database extends PDO {
     public function select($sql, $array = array(), $fetchMode = PDO::FETCH_ASSOC){
         $sth = $this->prepare($sql);
         foreach($array as $key=>$value){
-            echo $key . " " . $value;
             $sth->bindValue($key, $value);
         }
         $q = $sth->execute();

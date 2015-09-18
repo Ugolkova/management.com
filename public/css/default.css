@@ -300,10 +300,11 @@ a.skype{
 .fieldsForm td + td{
     width: 60%;
 }
-.fieldsForm small{
+table small{
+    display: block;
     font-size: 12px;
     font-style: italic;
-    line-height: 0px;
+    line-height: 16px;
     padding: 0px;
 }
 

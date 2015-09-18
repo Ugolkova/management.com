@@ -22,23 +22,49 @@ class Fields_model extends Model {
             unset( $field['field_id'] );
         }
         
+        // Get field type for DB, table user_fields
+        $f_type = 'VARCHAR(255)';
+        $enum_field_types = ['select', 'checkboxes', 'radio_buttons'];
+        
+        if( in_array( $field['field_type'], $enum_field_types ) ){  
+            $f_settings = unserialize( $field['field_settings'] );
+            $f_type = 'ENUM(';
+            foreach( $f_settings['options'] as $option ){
+                $f_type .= '"' . $option . '",';
+            }
+            $f_type = rtrim($f_type, ',');
+            $f_type .=  ')';
+        }
+        
         if( $field_id ){
             if( !$this->db->update( 'fields', $field, 'field_id=' . $field_id )){
                 throw new Exception("Wrong data for field #" . $field_id);
             }
+            
+            $alterTableAction = "MODIFY";
         } else {
             $field_id = $this->db->insert('fields', $field);
             if( !$field_id ){
                 throw new Exception("Can't add the field");
             }
-            $this->db->alterTable( 'ALTER TABLE `user_fields` ADD field_' . $field_id . ' VARCHAR(255) NOT NULL' );
+            
+            $alterTableAction = "ADD";
         }   
+        
+        $this->db->alterTable( 'ALTER TABLE `user_fields` ' . 
+                                $alterTableAction . ' field_' . $field_id . 
+                                ' ' . $f_type . ' NOT NULL' );
         
         return $field_id;
     }
     
-    public function getField( $field_id ){
+    public function getEntry( $field_id ){
         $field = $this->db->select( 'SELECT * FROM fields WHERE field_id=:field_id', array('field_id' => $field_id) );
+        
+        if( !$field ){
+            return FALSE;
+        }
+        
         return $field;
     }
     

@@ -17,3 +17,5 @@ define("COUNT_ENTRIES_ON_PAGE", 5);
 
 define('HASH_GENERAL_KEY', 'gf<<qJ(&oeXehfE');
 define('HASH_PASSWORD_KEY', 'catsFLYhigh2000miles');
+
+define('FIELD_OPTIONS_DELIMITER', ', ');

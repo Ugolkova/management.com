@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `fields` (
   `field_id` int(11) NOT NULL AUTO_INCREMENT,
   `field_type` varchar(100) NOT NULL,
   `field_label` varchar(255) NOT NULL,
-  `field_instructions` text,
+  `field_instruction` text,
   `field_required` tinyint(1) DEFAULT '0',
   `field_settings` text NOT NULL,
   `owner_id` int(100) NOT NULL,

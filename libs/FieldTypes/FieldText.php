@@ -4,7 +4,7 @@ class FieldText extends FieldType {
     function __construct() {
         parent::__construct();
         
-        $this->_setOptions( 'Maxlength', 'maxlength', 20 );
+        $this->_setOptions( 'Maxlength', 'maxlength', 20, FALSE, 'Max length of the field' );
         $this->_setOptions( 'Minlength', 'minlength', 5 );
         $this->_setOptions( 'Placeholder', 'placeholder' );
     }
@@ -13,14 +13,15 @@ class FieldText extends FieldType {
      * Render form element
      * 
      * @param array $data
-     * @return string
+     * @return array
      */
     public function render($data){
-        $element = $this->_setLabel($data['label'], $data['required']);
-        $element .= '<input type="text" name="field_' . $data['id'] 
-                    . '" value="' . $data['default'] . '" placeholder="' 
-                    . $data['placeholder'] . '" ' 
-                    . $this->_isRequired($data['required']) .' />';
+        $element['label'] = $this->_setLabel($data['field_label'], $data['field_required']);
+        $element['instruction'] = $data['field_instruction'];
+        $element['tag'] = '<input type="text" name="field_' . $data['field_id'] 
+                    . '" value="' . $data['field_value'] . '" placeholder="' 
+                    . $data['field_settings']['placeholder'] . '" ' 
+                    . $this->_isRequired($data['field_required']) .' />';
         
         return $element;
     }

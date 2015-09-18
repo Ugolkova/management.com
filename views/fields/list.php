@@ -1,4 +1,4 @@
-<a href="<?php echo URL; ?>fields/add" class="button add">Add field</a>
+<a href="<?php echo URL; ?>fields/add" class="button add">Add Field</a>
 
 <form action="<?php echo URL; ?>/users/search" class="searchForm">
     <fieldset>

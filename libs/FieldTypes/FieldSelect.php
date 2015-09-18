@@ -4,7 +4,7 @@ class FieldSelect extends FieldType {
     function __construct() {
         parent::__construct();
         
-        $this->_setOptions('Options', 'options', '', 'Use comma to separate items');
+        $this->_setOptions('Options', 'options', '', FALSE, 'Use comma to separate items');
     }
     
     /**
@@ -13,21 +13,22 @@ class FieldSelect extends FieldType {
      * @return string
      */
     public function render($data){
-        $element = $this->_setLabel($data['label'], $data['required']); 
-        $element .= '<select name="field_' . $data['id'] . '"';
-        $element .= $this->_isRequired($data['required']). '>';
-        $data['values'] = explode('|', $data['values']);
-        if(!empty($data['values'])){
-            foreach($data['values'] as $option){
+        $element['label'] = $this->_setLabel($data['field_label'], $data['field_required']); 
+        $element['instruction'] = $data['field_instruction'];
+        $element['tag'] = '';
+        $element['tag'] .= '<select name="field_' . $data['field_id'] . '"';
+        $element['tag'] .= $this->_isRequired($data['field_required']). '>';
+        if(!empty($data['field_settings']['options'])){
+            foreach($data['field_settings']['options'] as $option){
                 $option = trim($option);
-                $element .= '<option value="' . $option . '"';
-                if($option == $data['default']){
-                    $element .= " selected";
-                }    
-                $element .= '>' . $option . '</option>';
+                $element['tag'] .= '<option value="' . $option . '"';  
+                if($option == $data['field_value']){
+                    $element['tag'] .= " selected";
+                }  
+                $element['tag'] .= '>' . $option . '</option>';
             }
         }
-        $element .= '</select>';
+        $element['tag'] .= '</select>';
         
         return $element;
     }

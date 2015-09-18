@@ -9,7 +9,6 @@ class Model {
     }
 
     function add(){
-        echo "Model<br />";
         if($this->request->post('submit')){
             
         } else {

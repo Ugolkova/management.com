@@ -1,4 +1,4 @@
-<a href="<?php echo URL; ?>fields/add" class="button add">Add field</a>
+<a href="<?php echo URL; ?>users/add" class="button add">Add User</a>
 
 <form action="<?php echo URL; ?>/users/search" class="searchForm">
     <fieldset>
@@ -27,8 +27,10 @@
 <?php if( empty($this->users) ) : ?>
     <p>There are no entries matching the criteria you selected.</p>
 <?php else: ?>               
-<form action="<?php echo URL . "edit/" ?>" method="POST">
+<form action="<?php echo URL . "users/edit/" ?>" method="POST">
     <?php echo $this->pagination; ?>
+    
+    <input type="hidden" name="token" value="<?php echo $this->token; ?>" />
     
     <table>
         <thead>
@@ -47,13 +49,13 @@
             <?php foreach($this->users as $user): ?>
             <tr>
                 <td><?php echo $user['user_id']; ?></td>
-                <td><a href="<?php echo URL . "users/show/" . $user['user_id']; ?>" title="<?php echo $user['user_name']; ?>"><?php echo $user['user_name']; ?></a></td>
+                <td><a href="<?php echo URL . "users/edit/" . $user['user_id']; ?>" title="<?php echo $user['user_name']; ?>"><?php echo $user['user_name']; ?></a></td>
                 <td><a href="<?php echo $user['user_email']; ?>"><?php echo $user['user_email']; ?></a></td>
                 <td><a href="skype:<?php echo $user['user_skype']; ?>#call" class="skype"><?php echo $user['user_skype']; ?></a></td>
                 <td><a href="<?php echo URL ?>projects/<?php echo $user['user_id']; ?>" title="Expensify">Expensify</a></td>
                 <td><a href="<?php echo URL; ?>users/show/<?php echo $user['lm_id']; ?>" title="<?php echo $user['lm_name']; ?>"><?php echo $user['lm_name']; ?></a></td>
                 <td><a href="<?php echo URL; ?>users/show/<?php echo $user['pm_id']; ?>" title="<?php echo $user['pm_name']; ?>"><?php echo $user['pm_name']; ?></a></td>
-                <td><input type="checkbox" name="ids[]" value="1" /></td>
+                <td><input type="checkbox" name="user_id[]" value="<?php echo $user['user_id']; ?>" /></td>
             </tr>
             <?php endforeach; ?>
         </tbody>
@@ -62,7 +64,7 @@
     <?php echo $this->pagination; ?>
 
     <div class="tableSubmit">
-        <input type="submit" name="submit" value="Submit" />
+        <input type="submit" name="submit_action" value="Submit" />
         <select name="action">
             <option value="edit">edit selected</option>
             <option value="delete">delete selected</option>
