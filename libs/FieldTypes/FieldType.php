@@ -38,7 +38,8 @@ abstract class FieldType {
      * @return string
      */
     protected function _setLabel($value, $required){
-        return '<label>' . $value . ($required == true ? '<s>*</s>' : '') . '</label>';
+        return '<label class="' . ($required == true ? 'required' : '') . '">' . 
+                $value . '</label>';
     }
     
     /**

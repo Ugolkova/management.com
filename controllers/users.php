@@ -5,7 +5,6 @@ class Users extends Controller {
     
     function __construct() {
         parent::__construct();
-        Session::set('user_id', 1);
     }
     
     function index(){
@@ -32,23 +31,30 @@ class Users extends Controller {
             $field_id = "";
         }
         
-        $user['user_login'] = $this->form->validate('user_login' . $id, 
-                                                    'User Login',
-                                                    'string', 
-                                                    'required');
-        $user['user_name'] = $this->form->validate('user_name' . $id, 
-                                                    'User Name',
-                                                    'string', 
-                                                    'required');
-        
-        $user['user_email'] = $this->form->validate('user_email' . $id, 
-                                                    'User Email', 
-                                                    'string', 
-                                                    'required|max_length[35]|min_length[3]');
-        $user['user_skype'] = $this->form->validate('user_skype' . $id, 
-                                                    'Field Instructions', 
-                                                    'string', 
-                                                    'required');
+        $user['owner_id'] = $this->form->validate('owner_id' .  $id, 
+                                                  'Owner ID',
+                                                  'integer', 
+                                                  'required');   
+
+        if( $user['owner_id'] == Session::get('user_id') ){
+            $user['user_login'] = $this->form->validate('user_login' . $id, 
+                                                        'User Login',
+                                                        'string', 
+                                                        'required');
+            $user['user_name'] = $this->form->validate('user_name' . $id, 
+                                                        'User Name',
+                                                        'string', 
+                                                        'required');
+
+            $user['user_email'] = $this->form->validate('user_email' . $id, 
+                                                        'User Email', 
+                                                        'string', 
+                                                        'required|max_length[35]|min_length[3]');
+            $user['user_skype'] = $this->form->validate('user_skype' . $id, 
+                                                        'User Skype', 
+                                                        'string', 
+                                                        'required');
+        }
         
         $ownerFields = $this->model->getFieldsData();
         foreach($ownerFields as $field){
@@ -77,7 +83,7 @@ class Users extends Controller {
      */
     public function get_list( $param1 = null, $param2 = null ){        
         $page = 1;
-        $userType = null;
+        $user_type = null;
 
         if( !is_null($param1) ){
             if(preg_match('/^p(\d+)$/', $param1, $matches) === 1){
@@ -85,7 +91,7 @@ class Users extends Controller {
             } else {
                 $param1 = strtolower($param1);
                 if(in_array($param1, $this->_userTypes)){
-                    $userType = $param1;
+                    $user_type = $param1;
                     if(preg_match('/^p(\d+)$/', $param2, $matches) === 1){
                         $page  = (int)$matches[1];
                     }
@@ -93,7 +99,7 @@ class Users extends Controller {
             }
         }
         
-        $usersArr   = $this->model->getList($page, $userType);
+        $usersArr   = $this->model->getList($page, $user_type);
         $usersCount = $this->model->getRowsCount();
         
         $this->view->users      = $usersArr;
@@ -105,21 +111,78 @@ class Users extends Controller {
         $pagination = new Pagination();
         $this->view->pagination = $pagination->createLinks($page, $usersCount);
         
-        $this->view->render("users/list");
+        $this->view->searchKey = $this->model->searchKey;        
+
+        if( $this->model->searchAutocomplete ){
+            $autocompleteArr = [];
+            foreach($usersArr as $user){
+                $autocompleteArr[] = array( 'link' => URL . 'users/edit/' . 
+                                                      $user['user_id'] . '/',
+                                            'name' => $user['user_name'] );
+            }
+            echo json_encode($autocompleteArr);
+        } else {
+            $this->view->render("users/list");
+        }    
     }
     
-    public function add(){
-        if(isset($_POST['submit'])){
-            if( parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST) !== HOST ){
-                header('location: ' . URL . 'users');
-                exit;
+    public function add(){  
+        require_once LIBS . 'FieldTypes/FieldTypeFactory.php';        
+        require_once LIBS . 'FieldTypes/FieldType.php';
+
+        $u_fields = [];
+        $fields_data = $this->model->getFieldsData();
+                
+        if( isset( $_POST['submit'] ) ){
+            $user = $this->_validateData();
+            // If we have any validation errors we can save data
+            if( empty( $this->form->errorMessages ) ){
+                try{
+                    $user_id = $this->model->save( $user );
+                    Session::set( 'msg_success', "User successfully added" );
+                    header( "location: " . URL . "users/edit/" . $user_id );
+                } catch( Exception $e ){
+                    Session::set( 'msg_error', $e->getMessage() );
+                    header( "location: " . URL . "users/get_list/" );
+                }
             } else {
-                $this->model->add();
+                Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
+                Session::set( 'msg_error', $this->form->errorMessages );
+                $this->view->token = Session::get( 'token' );  
+                $this->view->setErrorFields( $this->form->errorFields );
+            }            
+            
+        } else {  
+            Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
+            $this->view->token = Session::get( 'token' );  
+            
+            $user = array(
+                'owner_id' => Session::get( 'user_id' ),
+                'user_login' => '',
+                'user_name' => '',
+                'user_email' => '',
+                'user_skype' => ''
+            );  
+            foreach($fields_data as $f_data){
+                $user['field_' . $f_data['field_id']] = '';
             }
-        } else {
-            $this->model->add();
-            $this->view->render("users/add");
-        }    
+        }
+
+        foreach($fields_data as $f_data){
+            $f_data['field_value'] = $user['field_' . $f_data['field_id']];
+            $f_data['field_settings'] = unserialize($f_data['field_settings']);
+            $u_field = FieldTypeFactory::build($f_data['field_type']);
+            $f_data['field_name'] = 'field_' . $f_data['field_id'];
+            $u_fields[] = $u_field->render($f_data); 
+        }
+
+        $this->view->user_fields = $u_fields;            
+        
+        $this->view->setTitle("Add User" );
+        $this->view->setHeader( "Add User" );
+        $this->view->user = $user;
+        $this->view->userId = FALSE;
+        $this->view->render("users/add");
     }
     
     public function edit( $user_id = NULL ){
@@ -149,7 +212,7 @@ class Users extends Controller {
                 // If we have any validation errors we can save data
                 if( empty( $this->form->errorMessages ) ){
                     try{
-                        $this->model->save( $user, $user['user_id'] );
+                        $this->model->save( $user );
                         $msg_success[] = "User #" . $user['user_id'] . " successfully updated";
                     } catch( Exception $e ){
                         $msg_error[] = $e->getMessage();
@@ -158,8 +221,9 @@ class Users extends Controller {
                     $errorMessages = array_merge( $errorMessages, $this->form->errorMessages );
                 }
                
-
-                
+                if( $user['owner_id'] != Session::get('user_id') ){ 
+                    $user = $this->model->getEntry( $user['user_id'] )[0];
+                }
                 
                 $users[] = $user;
             }            
@@ -179,25 +243,24 @@ class Users extends Controller {
             } else {
                 $user_ids[] = $user_id;
             }
-            
+
             if( empty( $user_ids ) ){
                 header( "location: " . URL . "users/get_list/" );
             }
-            
             $users = array();
             foreach( $user_ids as $u_id ){
                 $user = $this->model->getEntry( $u_id )[0];
-                    
+
                 if( $user ){
                     $users[] = $user;
                 }                
             }
-            
+                        
             if( empty($users) ){
                 Session::delete( 'msg_error' );
                 Session::delete( 'msg_success' );
                 
-                //header( "location: " . URL . "users/get_list/" );
+                header( "location: " . URL . "users/get_list/" );
                 die();
             }            
         } 
@@ -210,20 +273,35 @@ class Users extends Controller {
                 $f_data['field_value'] = $user['field_' . $f_data['field_id']];
                 $f_data['field_settings'] = unserialize($f_data['field_settings']);
                 $u_field = FieldTypeFactory::build($f_data['field_type']);
+                $f_data['field_name'] = 'field_' . $f_data['field_id'] . 
+                                        '[' . $k . ']';
                 $u_fields[] = $u_field->render($f_data); 
             }
 
-            $this->view->user_fields[$k] = $u_fields;            
+            $this->view->user_fields[$k] = $u_fields;   
+            
+            $this->view->disabledStandardFields[$k] = 
+                $user['owner_id'] != Session::get('user_id') ?
+                                      'disabled="disabled" ' : '';
         }
         
         
         Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
         $this->view->token = Session::get( 'token' );  
         
+        $title = "Edit User";
+        if( COUNT( $users ) > 1 ){
+            $title = "Edit Users";
+        }
+
+        $this->view->setTitle( $title );
+        $this->view->setHeader( $title );
+        
+        
         $this->view->users = $users;
         $this->view->user_id = $user_id;
         $this->view->render("users/edit");
         
-    }
+    }    
 }
 

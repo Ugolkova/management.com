@@ -15,7 +15,7 @@ class View {
     }
 
     public function setHeader( $header ){
-        $this->title = $header;
+        $this->header = $header;
     }    
     
     public function setErrorFields( $fields ){

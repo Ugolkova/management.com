@@ -1,10 +1,10 @@
 <a href="<?php echo URL; ?>users/add" class="button add">Add User</a>
 
-<form action="<?php echo URL; ?>/users/search" class="searchForm">
+<form action="<?php echo URL; ?>users/search/" class="searchForm">
     <fieldset>
         <legend>Total users: <?php echo $this->usersCount; ?></legend>
-        <input type="text" value="" placeholder="Keywords" />
-        <input type="submit" name="submit" value="" />
+        <input type="text" name="key" value="" placeholder="Keywords" />
+        <input type="submit" value="" />
 
         <div class="clear"></div>
         <b>User Group</b>

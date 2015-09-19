@@ -1,28 +1,19 @@
 <?php
 
-class Form {
-    /**
-     * We set data to this variable in method input() and then use it in filter()
-     * and validate() methods 
-     * 
-     * @var array
-     */
-    private $_fLabel = '';
-    private $_fName = '';
-    private $_fValue = '';
+class Form extends Request{
     
     public $errorFields = array();
     public $errorMessages = array();
     
     function __construct() {
+        parent::__construct();
+        
         if($_POST){
             $url = parse_url($_SERVER['HTTP_REFERER']);
             if($url['host'] !== HOST){
                 throw new Exception("Unknown host");
             }
         }
-        // Use stripslashes for both POST and GET arrays
-        $_POST  = $this->_stripslashes($_POST);
         
         if( (string)$_POST['token'] !== Session::get( "token" )){
             throw new Exception("Wrong token");
@@ -70,32 +61,7 @@ class Form {
         
         return $var;
     }
-    
-    /**
-     * Set data to right type
-     * 
-     * @param string $type
-     */
-    private function _filter( $type ){
-        switch ($type){
-            case "string":
-                $this->_fValue = strval( $this->_fValue );
-                break;
-            case "integer":
-                $this->_fValue = intval( $this->_fValue );
-                
-                break;
-            case "boolean":
-                $this->_fValue = !empty( $this->_fValue );
-                
-                break;
-            default:
-                
-                break;
-        } 
-    }
-    
-    
+        
     private function _setRule( $param ){
         $val = '';
         preg_match( '/(?<param>\w+)\[(?<val>\w+)\]$/', $param, $matches);

@@ -33,7 +33,20 @@ class Fields extends Controller {
         
         $pagination = new Pagination();
         $this->view->pagination = $pagination->createLinks($page, $fieldsCount);
-        $this->view->render("fields/list");
+
+        $this->view->searchKey = $this->model->searchKey;        
+        
+        if( $this->model->searchAutocomplete ){
+            $autocompleteArr = [];
+            foreach($fieldsArr as $field){
+                $autocompleteArr[] = array( 'link' => URL . 'fields/edit/' . 
+                                                      $field['field_id'] . '/',
+                                             'name' => $field['field_label']);
+            }
+            echo json_encode($autocompleteArr);
+        } else {
+            $this->view->render("fields/list");
+        }
     }
     
     
@@ -69,7 +82,7 @@ class Fields extends Controller {
         $field['field_instruction'] = $this->form->validate('field_instruction' . $field_id, 
                                                              'Field Instruction', 
                                                              'string', 
-                                                             'required');
+                                                             '');
         $field['field_required'] = $this->form->validate('field_required' . $field_id, 
                                                          'Field Required', 
                                                          'boolean');
@@ -313,28 +326,5 @@ class Fields extends Controller {
         }
         
         return $fieldTypes;
-    }
-
-    public function delete(){
-        if( isset( $_POST['submit_action'] ) ){
-            // Check POST data
-            try{
-                $this->form = new Form();
-            } catch (Exception $e) {
-                Session::set( 'msg_error', array($e->getMessage()) );
-                header( "location: " . $_SERVER['HTTP_REFERER'] );
-                exit();
-            }
-
-            if( COUNT($_POST['field_id']) ){
-                foreach($_POST['field_id'] as $field_id){
-                    $this->model->delete( $field_id );
-                    Session::set('msg_success', 'Fields are successfully deleted.');
-                }    
-            } else {
-                Session::set('msg_error', 'Any fields');
-            }
-            header( "location: " . URL . "fields/get_list/" );
-        }    
     }
 }

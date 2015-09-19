@@ -1,10 +1,10 @@
 <a href="<?php echo URL; ?>fields/add" class="button add">Add Field</a>
 
-<form action="<?php echo URL; ?>/users/search" class="searchForm">
+<form action="<?php echo URL; ?>fields/search" class="searchForm">
     <fieldset>
         <legend>Total fields: <?php echo $this->fieldsCount; ?></legend>
-        <input type="text" value="" placeholder="Keywords" />
-        <input type="submit" name="submit" value="" />
+        <input type="text" name="key" value="<?php echo $this->searchKey; ?>" placeholder="Keywords" />
+        <input type="submit" value="" />
 
         <div class="clear"></div>
 

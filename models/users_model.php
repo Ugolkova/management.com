@@ -29,6 +29,10 @@ class Users_model extends Model {
             }
         }
         
+        if( $this->searchKey !== '' ){
+            $where .= " AND t1.user_name LIKE '%" . $this->searchKey . "%'";
+        }
+        
         $limit = "LIMIT ";
         if($page > 1){
             $limit .= (($page - 1) * COUNT_ENTRIES_ON_PAGE) . ", " 
@@ -37,7 +41,7 @@ class Users_model extends Model {
             $limit .= COUNT_ENTRIES_ON_PAGE;
         }
                 
-        $sql = "SELECT t1.user_id, t1.user_name, t1.user_email, t1.user_skype, 
+        $sql = "SELECT t1.user_id, t1.user_name, t1.user_email, t1.user_skype,  
             t6.avatar_path, t2.lm_id, t3.user_name as lm_name, 
             t4.pm_id, t5.user_name as pm_name FROM users as t1
             LEFT JOIN lm_users as t2 ON t2.user_id = t1.user_id 
@@ -72,13 +76,16 @@ class Users_model extends Model {
         }
         $fields = rtrim( $fields, ',' );
         
-        $user = $this->db->select( 'SELECT u.*, ' . $fields .' FROM users as u 
-                                    INNER JOIN user_fields uf ON uf.user_id = u.user_id
-                                    WHERE u.user_id=:user_id 
-                                    AND u.owner_id=:owner_id AND uf.owner_id = u.owner_id', 
-                                    array('user_id' => $user_id,
-                                          'owner_id' => Session::get('user_id')   ) );
-        
+        if( $fields !== '' ){
+            $fields = ', ' . $fields;
+        }
+
+        $user = $this->db->select( 'SELECT u.*' . $fields .' FROM users as u 
+                                    LEFT JOIN user_fields uf 
+                                        ON uf.user_id = u.user_id AND uf.owner_id = :owner_id
+                                    WHERE u.user_id=:user_id', 
+                                    array( 'owner_id' => Session::get( 'user_id' ),
+                                            'user_id' => $user_id) );
         if( !$user ){
             return FALSE;
         }
@@ -99,6 +106,7 @@ class Users_model extends Model {
     }
     
     public function save( $user ){
+        $user_id = NULL;
         if( isset( $user['user_id'] ) ){
             $user_id = $user['user_id'];
             unset( $user['user_id'] );
@@ -118,25 +126,48 @@ class Users_model extends Model {
             }
         }
 
-       if( $user_id ){
-            if( !$this->db->update( 'users', $u_table_data, 'user_id=' . $user_id )){
+        if( $user_id !== NULL ){
+            $onDuplUpdate = '';
+            if( $user['owner_id'] == Session::get('user_id') && 
+                    !$this->db->update( 'users', 
+                                        $u_table_data, 
+                                        'user_id=' . $user_id ) ){
                 throw new Exception("Wrong data for user #" . $user_id);
             }
-            if( !$this->db->update( 'user_fields', 
-                                    $uf_table_data, 
-                                    'user_id=' . $user_id . ' AND owner_id=' . 
-                                        Session::get('user_id')  )){
-                throw new Exception("Wrong data for user fields #" . $user_id);
-            } 
+
+            $uf_table_data_dupl = $uf_table_data;
+            foreach( $uf_table_data_dupl as $key=>$value ){
+                $onDuplUpdate .= "$key = '$value', ";
+            }
+            $onDuplUpdate = rtrim($onDuplUpdate, ", "); 
+
+            $uf_table_data['user_id'] = $user_id;
+            $uf_table_data['owner_id'] = Session::get( 'user_id' );
+
+            
+            $uf_table_data['user_id'] = $user_id;
+            $uf_table_data['owner_id'] = Session::get( 'user_id' );
+
+            $this->db->insert( 'user_fields', $uf_table_data, $onDuplUpdate );  
+
+            
         } else {
-            $user_id = $this->db->insert( 'users', $user );
+            $user_id = $this->db->insert( 'users', $u_table_data );
             if( !$user_id ){
                 throw new Exception( "Can't add the user" );
-            }            
+            }
+            
+            $uf_table_data['user_id'] = $user_id;
+            $uf_table_data['owner_id'] = Session::get( 'user_id' );
+            
+            $this->db->insert( 'user_fields', $uf_table_data );
         }  
         
         return $user_id;
     }
     
+    public function delete( $user_id ){
+        $this->db->delete( 'users', 'user_id=' . $user_id );
+    }    
 }
 

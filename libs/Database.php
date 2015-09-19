@@ -20,11 +20,18 @@ class Database extends PDO {
         return $sth->fetchAll($fetchMode);
     }
     
-    public function insert($table, $data){
+    public function insert($table, $data, $onDuplUpdate = ''){
         $fieldNames = "`" . implode("`, `", array_keys($data)) . "`";
         $fieldValues = ":" . implode(", :", array_keys($data));
                 
-        $sth = $this->prepare("INSERT INTO $table ($fieldNames) VALUES ($fieldValues)");
+        $query = "INSERT INTO $table ($fieldNames) VALUES ($fieldValues)";
+        if( $onDuplUpdate != '' ){
+            $query .= ' ON DUPLICATE KEY UPDATE ' . $onDuplUpdate;
+        }
+        
+        echo $query;
+        
+        $sth = $this->prepare($query);
         foreach($data as $key=>$value){
             $sth->bindValue(":$key", $value);
         }

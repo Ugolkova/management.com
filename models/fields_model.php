@@ -78,6 +78,10 @@ class Fields_model extends Model {
                 
         $where = "WHERE owner_id=" . Session::get('user_id');
         
+        if( $this->searchKey !== '' ){
+            $where .= " AND field_label LIKE '%" . $this->searchKey . "%'";
+        }
+        
         $sql = "SELECT field_id, field_type, field_label FROM fields $where $limit";
                 
         $fieldsArr = $this->db->select( $sql ); 

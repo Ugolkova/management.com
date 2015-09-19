@@ -16,7 +16,7 @@ class FieldSelect extends FieldType {
         $element['label'] = $this->_setLabel($data['field_label'], $data['field_required']); 
         $element['instruction'] = $data['field_instruction'];
         $element['tag'] = '';
-        $element['tag'] .= '<select name="field_' . $data['field_id'] . '"';
+        $element['tag'] .= '<select name="' . $data['field_name'] . '"';
         $element['tag'] .= $this->_isRequired($data['field_required']). '>';
         if(!empty($data['field_settings']['options'])){
             foreach($data['field_settings']['options'] as $option){

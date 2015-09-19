@@ -1,15 +1,11 @@
 <?php
 
-class Request {
+class Request {  
+    protected $_fLabel = '';
+    protected $_fName = '';
+    protected $_fValue = '';    
     
     function __construct() {
-        if($_POST){
-            $url = parse_url($_SERVER['HTTP_REFERER']);
-            if($url['host'] !== HOST){
-                throw new Exception("Unknown host");
-            }
-        }
-        // Use stripslashes for both POST and GET arrays
         $_POST  = $this->_stripslashes($_POST);
         $_GET   = $this->_stripslashes($_GET);
     }
@@ -32,97 +28,38 @@ class Request {
     }
     
     /**
-     * This function returns $_GET[$name] variable, which is filtered according to the type
-     * the function will be used like this:
-     * $age = $this->request->get('age', 'integer');
-     * so the value of variable $age equals (int)$_GET['age']
-     * @param string $name
-     * @param string $type We use three types: string | integer | boolean
-     * @return string | array
+     * Set data to right type
+     * 
+     * @param string $type
      */
-    function get($name, $type = null){
-        $val = null;
-        if(isset($_GET[$name]))
-            $val = $_GET[$name];
-        
-        if(!empty($type) && is_array($val)){
-            $val = reset($val);
-        }
-        
+    protected function _filter( $type ){
         switch ($type){
             case "string":
-                $val = strval(preg_replace('/[^\p{L}\p{Nd}\d\s_\-\.\%\s]/ui', '', $val));
+                $this->_fValue = strval( $this->_fValue );
                 break;
             case "integer":
-                $val = intval($val);
+                $this->_fValue = intval( $this->_fValue );
+                
                 break;
             case "boolean":
-                $val = !empty($val);
-                break;
-        }
-        
-        return $val;
-    }
-    
-    /**
-     * This function returns $_POST[$name] variable, which is filtered according to the type
-     * the function will be used like this:
-     * $age = $this->request->get('age', 'integer');
-     * so the value of variable $age equals (int)$_POST['age']
-     * @param string $name
-     * @param string $type We use three types: string | integer | boolean
-     * @return string | array
-     */
-    function post($name, $type = null){
-        $val = null;
-        
-        
-        preg_match('/(?<name>\w+)\[(?<index>\d+)\]/', $name, $matches);
-        
-        if($matches){
-            $name = $matches['name'];
-            $index = $matches['index'];
-            
-            if( isset($_POST[$name][$index]) ){
-                $val = $_POST[$name][$index];
-            }
-        } else {
-            if( isset($_POST[$name]) ){
-                $val = $_POST[$name];
-            }    
-        }
-        
-        $val = trim($val);
-        
-        switch ($type){
-            case "string":
-                $val = strval(preg_replace('/[^\p{L}\p{Nd}\d\s_\-\.\%\s]/ui', '', $val));
-                break;
-            case "integer":
-                $val = intval($val);
-                break;
-            case "boolean":
-                $val = !empty($val);
-                break;
-        }
+                $this->_fValue = !empty( $this->_fValue );
 
-        return $val;        
-    }
+                break;
+            default:
+                
+                break;
+        } 
+    }    
     
-    /**
-     * By using this function we can get the name of the file, if the second parameter is defined
-     * or an array according to the first parameter. 
-     * @param string $name
-     * @param string $name1
-     * @return array|string|null
-     */
-    function files($name, $name1 = null){
-        if(!empty($name1) && !empty($_FILES[$name][$name1])){
-            return $_FILES[$name][$name1];
-        } else if(empty($name1) && !empty($_FILES[$name])) {
-            return $_FILES[$name];
+    public function validate( $name, $type ){
+        if( isset($_GET[$name]) ){
+            $this->_fValue = $_GET[$name];
+        } else {
+            $this->_fValue = '';
         }
-        return null;
+        
+        $this->_filter($type);
+        
+        return $this->_fValue;
     }
-    
 }

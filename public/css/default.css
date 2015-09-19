@@ -27,16 +27,17 @@ section{
     border-radius: 10px;
         -moz-border-radius: 10px;
             -webkit-border-radius: 10px;
+    margin: 0 auto;
     padding: 50px 20px 10px;
     position: relative;
-    margin: 0 auto;
+    z-index: 1;
 }
 section > div{
-    background: #ECF1F4;
+    background: #D9E2EA;
     padding: 20px 10px 10px;
 }
 h1{
-    background: #9BADB8;
+    background: #7DABD2;
     border-bottom: 1px solid #FFF;
     border-radius: 10px 10px 0px 0px;
     color: #FFF;
@@ -62,7 +63,7 @@ table, th, td {
     border: 1px solid #d0d7df;
 }
 th{
-    background-color: #2a3940;
+    background-color: #295479;
     color: #FFF;
 }
 td{
@@ -75,14 +76,14 @@ th, td{
     text-align: left;
 }
 th{
-    border-bottom-color: #2a3940;
-    border-top-color: #2a3940;
+    border-bottom-color: #295479;
+    border-top-color: #295479;
 }
 th:first-child{
-    border-left: 1px solid #2a3940;
+    border-left: 1px solid #295479;
 }
 th:last-child{
-    border-right: 1px solid #2a3940;
+    border-right: 1px solid #295479;
 }
 
 th:first-child, 
@@ -93,7 +94,7 @@ td:last-child{
 }
 
 hr{
-    background-color: #2A3940;
+    background-color: #295479;
     border: none;
     height: 1px;
     margin: 50px 0px;
@@ -316,7 +317,10 @@ table small{
     background-color: #1F2B33;
     color: #FFF;
     display: block;
-    padding: 10px 50px;
+    padding: 10px 0px;
+    position: absolute;
+    width: 100%;
+    z-index: 3;
 }
 
 .message i{
@@ -325,15 +329,15 @@ table small{
     float: right;
     font-style: normal;
     position: relative;
-    right: -20px;
+    right: 20px;
 }
 .message p.error,
 .message p.success{
-    background-position: center left;
+    background-position: 25px center;
     background-repeat: no-repeat;
     line-height: 25px;
-    margin-left: -25px;
-    padding-left: 25px;    
+    margin-left: 0px;
+    padding-left: 50px;    
 }
 .message p.error{
     background-image: url(http://management.com/public/img/error.png);
@@ -363,4 +367,69 @@ table.fields td:last-child{
 .button.add{
     right: 0px;
     top: -103px;
+}
+menu{
+    background-color: #295479;
+    color: #FFF;
+    height: 40px;
+    line-height: 40px;
+    padding: 0px 20px;
+}
+menu a{
+    color: inherit;
+}
+menu li{
+    float: left;
+    padding: 0px 20px;
+    position: relative;
+}
+menu li a:hover{
+    text-decoration: none;
+}
+menu li > ul{
+    background-color: #0B3456;
+    display: none;
+    margin-left: -20px;
+    line-height: 30px;
+    overflow: hidden;
+    position: absolute;
+    z-index: 2;
+}
+menu li:hover ul{
+    display: block;
+    position: absolute;
+}
+menu li > ul li{
+    border-bottom: 1px solid #CCC;
+    white-space: nowrap;
+    width: 100%;
+}
+menu li > ul li:first-child{
+    /*padding-top: 5px;*/
+}
+menu li > ul li:last-child{
+    border-bottom: none;
+}
+menu li:hover,
+menu li.active{
+    background-color: #0B3456;
+}
+menu li li:hover, 
+menu li li.active{
+    background-color: #032848;    
+}
+    
+.ui-widget-content a{
+    display: block;
+}
+a#auth{
+    line-height: 40px;
+    position: absolute;
+    right: 20px;
+}
+input[type="text"][disabled="disabled"],
+textarea[disabled="disabled"],
+select[disabled="disabled"]{
+    background-color: inherit;
+    border: none;
 }

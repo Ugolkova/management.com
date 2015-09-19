@@ -38,7 +38,7 @@ $(document).ready(function(){
                 <td><input type="text" name="field_label" value="<?php echo $this->field['field_label']; ?>" class="<?php echo $this->isErrorField('field_label') ? 'error' : ''; ?>" /></td>
             </tr>
             <tr>
-                <td><label class="required">Field Instructions</label></td>
+                <td><label>Field Instructions</label></td>
                 <td><textarea name="field_instruction" rows="4" class="<?php echo $this->isErrorField('field_instruction') ? 'error' : ''; ?>"><?php echo $this->field['field_instruction']; ?>
 </textarea></td>
             </tr>

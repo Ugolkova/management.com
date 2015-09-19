@@ -14,25 +14,28 @@
             <!-- Standard User Data -->
             <tr>
                 <td><label class="required">User Name</label></td>
-                <td><input type="text" name="user_name[<?php echo $k; ?>]" value="<?php echo $user['user_name']; ?>" class="<?php echo $this->isErrorField("user_name[$k]") ? 'error' : ''; ?>" /></td>
+                <td><input type="text" name="user_name[<?php echo $k; ?>]" value="<?php echo $user['user_name']; ?>" class="<?php echo $this->isErrorField("user_name[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?>/></td>
             </tr>
             <tr>
                 <td><label class="required">User Login</label></td>
-                <td><input type="text" name="user_login[<?php echo $k; ?>]" value="<?php echo $user['user_login']; ?>" class="<?php echo $this->isErrorField("user_login[$k]") ? 'error' : ''; ?>" /></td>
+                <td><input type="text" name="user_login[<?php echo $k; ?>]" value="<?php echo $user['user_login']; ?>" class="<?php echo $this->isErrorField("user_login[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?>/></td>
             </tr>
             <tr>
                 <td><label class="required">User Email</label></td>
-                <td><input type="text" name="user_email[<?php echo $k; ?>]" value="<?php echo $user['user_email']; ?>" class="email <?php echo $this->isErrorField("user_email[$k]") ? 'error' : ''; ?>" /></td>
+                <td><input type="text" name="user_email[<?php echo $k; ?>]" value="<?php echo $user['user_email']; ?>" class="email <?php echo $this->isErrorField("user_email[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?>/></td>
             </tr>
             <tr>
                 <td><label class="required">User Skype</label></td>
-                <td><input type="text" name="user_skype[<?php echo $k; ?>]" value="<?php echo $user['user_skype']; ?>" class="<?php echo $this->isErrorField("user_skype[$k]") ? 'error' : ''; ?>" /></td>
+                <td><input type="text" name="user_skype[<?php echo $k; ?>]" value="<?php echo $user['user_skype']; ?>" class="<?php echo $this->isErrorField("user_skype[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?>/></td>
             </tr>
 
             <!-- END Standard User Data -->
+            <?php if( COUNT( $this->user_fields[$k] ) ): ?>
             <tr>
                 <th colspan="2">User Fields</th>
             </tr>
+            <?php endif; ?>
+            
             <?php foreach ($this->user_fields[$k] as $field): ?>
             <tr>
                 <td><?php echo $field['label']; ?></td>

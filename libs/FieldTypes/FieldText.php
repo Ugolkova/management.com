@@ -18,9 +18,11 @@ class FieldText extends FieldType {
     public function render($data){
         $element['label'] = $this->_setLabel($data['field_label'], $data['field_required']);
         $element['instruction'] = $data['field_instruction'];
-        $element['tag'] = '<input type="text" name="field_' . $data['field_id'] 
+        $element['tag'] = '<input type="text" name="' . $data['field_name'] 
                     . '" value="' . $data['field_value'] . '" placeholder="' 
                     . $data['field_settings']['placeholder'] . '" ' 
+                    . '" minlength="' . $data['field_settings']['minlength'] . '" ' 
+                    . '" maxlength="' . $data['field_settings']['maxlength'] . '" ' 
                     . $this->_isRequired($data['field_required']) .' />';
         
         return $element;
