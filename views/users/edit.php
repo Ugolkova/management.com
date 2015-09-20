@@ -14,11 +14,15 @@
             <!-- Standard User Data -->
             <tr>
                 <td><label class="required">User Name</label></td>
-                <td><input type="text" name="user_name[<?php echo $k; ?>]" value="<?php echo $user['user_name']; ?>" class="<?php echo $this->isErrorField("user_name[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?>/></td>
+                <td>
+                    <input type="text" name="user_name[<?php echo $k; ?>]" value="<?php echo $user['user_name']; ?>" class="<?php echo $this->isErrorField("user_name[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?>/>
+                </td>
             </tr>
             <tr>
                 <td><label class="required">User Login</label></td>
-                <td><input type="text" name="user_login[<?php echo $k; ?>]" value="<?php echo $user['user_login']; ?>" class="<?php echo $this->isErrorField("user_login[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?>/></td>
+                <td>
+                    <input type="text" name="user_login[<?php echo $k; ?>]" value="<?php echo $user['user_login']; ?>" class="<?php echo $this->isErrorField("user_login[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?>/>
+                </td>
             </tr>
             <tr>
                 <td><label class="required">User Email</label></td>
@@ -47,6 +51,62 @@
             <?php endforeach; ?>
         </tbody>    
     </table>
+    
+    <?php if( COUNT( $this->lmUsers[$k] ) ) : ?>
+    <strong>LM Users</strong>
+    <table class="relatedUsers">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Skype</th>
+            </tr>
+        </thead>
+        <tbody>                       
+            <?php foreach($this->lmUsers[$k] as $lmUser): ?>
+            <tr>
+                <td><?php echo $lmUser['user_id']; ?></td>
+                <td>
+                    <a href="<?php echo URL . "users/edit/" . $lmUser['user_id']; ?>" 
+                       title="<?php echo $lmUser['user_name']; ?>">
+                        <?php echo $lmUser['user_name']; ?></a>
+                </td>
+                <td><a href="mailto:<?php echo $lmUser['user_email']; ?>"><?php echo $lmUser['user_email']; ?></a></td>
+                <td><a href="skype:<?php echo $lmUser['user_skype']; ?>#call" class="skype"><?php echo $lmUser['user_skype']; ?></a></td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php endif; ?>
+
+    <?php if( COUNT( $this->pmUsers[$k] ) ) : ?>
+    <strong>PM Users</strong>
+    <table class="relatedUsers">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Skype</th>
+            </tr>
+        </thead>
+        <tbody>                       
+            <?php foreach($this->pmUsers[$k] as $lmUser): ?>
+            <tr>
+                <td><?php echo $lmUser['user_id']; ?></td>
+                <td>
+                    <a href="<?php echo URL . "users/edit/" . $lmUser['user_id']; ?>" 
+                       title="<?php echo $lmUser['user_name']; ?>">
+                        <?php echo $lmUser['user_name']; ?></a>
+                </td>
+                <td><a href="mailto:<?php echo $lmUser['user_email']; ?>"><?php echo $lmUser['user_email']; ?></a></td>
+                <td><a href="skype:<?php echo $lmUser['user_skype']; ?>#call" class="skype"><?php echo $lmUser['user_skype']; ?></a></td>
+            </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <?php endif; ?>    
     
     <?php if( COUNT($this->users) > 1 AND $user !== end($this->users) ): ?>
     <hr />

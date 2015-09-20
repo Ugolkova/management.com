@@ -5,11 +5,39 @@ $(document).ready(function(){
         $('.message').slideUp(100);
     });
     
-    $('input[name=check_all]').click(function(){
-        $(this).closest('table')
-               .find('tbody')
-               .find('tr')
-               .find('input[type=checkbox]').click();         
+    $('input[name=check_all]').click(function(e){
+        var elements = $(this).closest('table')
+                              .find('tbody')
+                              .find('tr')
+                              .find('input[type=checkbox]');
+        if( $(this).is(':checked') ){
+            elements.prop('checked', true);
+            elements.each(function(){
+                $(this).closest('tr').addClass('checked');
+            });
+        } else {
+            elements.removeAttr('checked');            
+            elements.each(function(){
+                $(this).closest('tr').removeClass('checked');
+            });
+        }
+    });
+    
+    $('table').find('tbody').find('input[type=checkbox]').click(function(){
+        var inputCheckAll = $('input[name=check_all]');
+        
+        inputCheckAll.removeAttr('checked');
+        
+        if( $(this).is(':checked') ){
+            if( $(this).closest('tbody').find('input[type=checkbox]:checked').length ==
+                    $(this).closest('tbody').find('tr').length ){
+                inputCheckAll.prop('checked', true);
+            }
+            
+            $(this).closest('tr').addClass('checked');
+        } else {
+            $(this).closest('tr').removeClass('checked');
+        }
     });
     
     $('select[name=action]').change(function(){
@@ -19,7 +47,7 @@ $(document).ready(function(){
     
     if( $('.message').length ){
         $.ajax({
-            url: '/message/remove',
+            url: '/index/removeMsg/',
             success: function(data){
                 console.log( 'message was removed' + data );
             },
@@ -40,9 +68,12 @@ $(document).ready(function(){
             });
         },
         minLength: 2,
+        focus: function( event, ui ) {
+            event.preventDefault();
+            $( "input[name='key']" ).val( ui.item.name );            
+        },
         select: function( event, ui ) {
-            //event.preventDefault();
-            //$( "input[name='key']" ).val( ui.item.name );
+            // TODO
         }
     });
     if( obj.data( "ui-autocomplete" ) ){
@@ -53,5 +84,26 @@ $(document).ready(function(){
                 .append( '<a href="' + item.link + '">' + item.name + '</a>')
                 .appendTo(ul);
         };   
-    }    
+    }
+    
+    $('table#list').find('tbody').find('tr').click(function(e){
+        if( e.target.nodeName == 'TD' ){
+            $(this).find('input[type=checkbox]').click();
+        }    
+    });
+    
+    $('select[name=results_count]').change(function(){        
+        var count = parseInt( $(this).val() );
+        $.ajax({
+            data: {count: count},
+            url: '/index/changeEntriesCount/',
+            success: function(data){
+                location.reload();
+            },
+            error: function(){
+                console.log( 'Can\'t change entries count.' );
+            }            
+        });
+    });
+    
 });

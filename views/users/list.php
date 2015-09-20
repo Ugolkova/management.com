@@ -15,11 +15,13 @@
         </select>
 
         <select name="results_count">
-            <option value="10">10 results</option>
-            <option value="20">20 results</option>
-            <option value="50">50 results</option>
-            <option value="100">100 results</option>
-            <option value="150">150 results</option>
+            <?php foreach($GLOBALS['COUNTS_ENTRIES_AVAILABLE'] as $count): ?>
+            <option value="<?php echo $count; ?>" 
+                <?php if( Session::get('COUNT_ENTRIES_ON_PAGE') == $count ): ?>
+                    selected="selected"<?php endif; ?> >    
+                <?php echo $count; ?> result<?php if( $count > 1 ): ?>s<?php endif; ?>
+            </option>            
+            <?php endforeach; ?>
         </select>    
     </fieldset>
 </form>    
@@ -32,7 +34,7 @@
     
     <input type="hidden" name="token" value="<?php echo $this->token; ?>" />
     
-    <table>
+    <table id="list">
         <thead>
             <tr>
                 <th>#</th>
@@ -40,8 +42,8 @@
                 <th>Email</th>
                 <th>Skype</th>
                 <th>Current Project</th>
-                <th>Project Manager</th>
                 <th>Line Manager</th>
+                <th>Project Manager</th>
                 <th><input type="checkbox" name="check_all" /></th>
             </tr>
         </thead>
@@ -49,13 +51,21 @@
             <?php foreach($this->users as $user): ?>
             <tr>
                 <td><?php echo $user['user_id']; ?></td>
-                <td><a href="<?php echo URL . "users/edit/" . $user['user_id']; ?>" title="<?php echo $user['user_name']; ?>"><?php echo $user['user_name']; ?></a></td>
-                <td><a href="<?php echo $user['user_email']; ?>"><?php echo $user['user_email']; ?></a></td>
+                <td>
+                    <a href="<?php echo URL . "users/edit/" . $user['user_id']; ?>" 
+                       title="<?php echo $user['user_name']; ?>">
+                        <?php echo $user['user_name']; ?></a>
+                    <?php if( $user['owner_id'] != Session::get('user_id') ): ?>
+                    <img src="<?php echo URL; ?>/public/img/creator.png" class="creator"
+                         title="<?php echo $user['owner_name']; ?>" />
+                    <?php endif; ?>
+                </td>
+                <td><a href="mailto:<?php echo $user['user_email']; ?>"><?php echo $user['user_email']; ?></a></td>
                 <td><a href="skype:<?php echo $user['user_skype']; ?>#call" class="skype"><?php echo $user['user_skype']; ?></a></td>
                 <td><a href="<?php echo URL ?>projects/<?php echo $user['user_id']; ?>" title="Expensify">Expensify</a></td>
                 <td><a href="<?php echo URL; ?>users/show/<?php echo $user['lm_id']; ?>" title="<?php echo $user['lm_name']; ?>"><?php echo $user['lm_name']; ?></a></td>
                 <td><a href="<?php echo URL; ?>users/show/<?php echo $user['pm_id']; ?>" title="<?php echo $user['pm_name']; ?>"><?php echo $user['pm_name']; ?></a></td>
-                <td><input type="checkbox" name="user_id[]" value="<?php echo $user['user_id']; ?>" /></td>
+                <td><input type="checkbox" name="user_id[]" value="<?php echo $user['user_id']; ?>" data-remove="<?php if( $user['owner_id'] == Session::get('user_id') || Session::get('user_type') == 'admin' ): ?>true<?php else: ?>false<?php endif; ?>" /></td>
             </tr>
             <?php endforeach; ?>
         </tbody>

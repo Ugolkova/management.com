@@ -248,7 +248,13 @@ class Fields extends Controller {
             
             $fields = array();
             foreach( $field_ids as $f_id ){
-                $field = $this->model->getEntry( $f_id )[0];
+                $field = $this->model->getEntry( $f_id );
+                if( !$field || empty($field) ){
+                    continue;
+                }
+                
+                $field = $field[0];
+                
                 $field['field_settings'] = unserialize($field['field_settings']);
                 if( isset( $field['field_settings']['options'] ) ){
                     $field['field_settings']['options'] = 

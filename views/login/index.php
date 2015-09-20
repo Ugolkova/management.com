@@ -66,7 +66,11 @@
     }
     form#login a:hover{
         text-decoration: none;
-    }    
+    } 
+    menu, 
+    #auth{
+        display: none;
+    }
 </style>
 
 <form method="POST" action="<?php echo URL; ?>login/run/" id="login">

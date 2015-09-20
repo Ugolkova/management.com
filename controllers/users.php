@@ -36,7 +36,9 @@ class Users extends Controller {
                                                   'integer', 
                                                   'required');   
 
-        if( $user['owner_id'] == Session::get('user_id') ){
+        if( $user['owner_id'] == Session::get('user_id') ||
+            Session::get('user_type') == 'admin' ){
+            
             $user['user_login'] = $this->form->validate('user_login' . $id, 
                                                         'User Login',
                                                         'string', 
@@ -100,7 +102,7 @@ class Users extends Controller {
         }
         
         $usersArr   = $this->model->getList($page, $user_type);
-        $usersCount = $this->model->getRowsCount();
+        $usersCount = $this->model->getRowsCount();        
         
         $this->view->users      = $usersArr;
         $this->view->usersCount = $usersCount;
@@ -280,12 +282,20 @@ class Users extends Controller {
 
             $this->view->user_fields[$k] = $u_fields;   
             
-            $this->view->disabledStandardFields[$k] = 
-                $user['owner_id'] != Session::get('user_id') ?
-                                      'disabled="disabled" ' : '';
+            $this->view->disabledStandardFields[$k] = '';
+            
+            if($user['owner_id'] != Session::get('user_id') &&
+                    Session::get('user_type') != 'admin' ){
+                $this->view->disabledStandardFields[$k] = 'disabled="disabled" ';
+            }
+            
+            $this->view->lmUsers[$k] = 
+                $this->model->getRelatedEntries($user['user_id'], 'lm');
+
+            $this->view->pmUsers[$k] = 
+                $this->model->getRelatedEntries($user['user_id'], 'pm');
         }
-        
-        
+                
         Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
         $this->view->token = Session::get( 'token' );  
         

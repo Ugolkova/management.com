@@ -62,14 +62,23 @@ table {
 table, th, td {
     border: 1px solid #d0d7df;
 }
+tbody tr{
+    background: #FFF;
+}
+tbody tr:hover td,
+tbody tr.checked td{
+    background-color: #EFF1F3;
+}
 th{
     background-color: #295479;
     color: #FFF;
 }
 td{
-    background-color: #f4f6f6
+    background-color: #f9f9f9
 }
-
+table#list td{
+    cursor:pointer;
+}
 th, td{
     line-height: 30px;
     padding: 0px 10px;
@@ -432,4 +441,23 @@ textarea[disabled="disabled"],
 select[disabled="disabled"]{
     background-color: inherit;
     border: none;
+}
+img.creator{
+    cursor: help;
+    display: inline-block;
+    float: right;
+    height: 18px;
+    margin-left: 0px;
+    opacity: 0.8;
+    position: relative;
+    right: -6px;
+    top: 6px;
+    vertical-align: middle;
+    width: 18px;
+}
+table + strong{
+    display: block;    
+    font-size: 15px;
+    line-height: 40px;
+    padding-top: 10px;
 }

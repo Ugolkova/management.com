@@ -5,9 +5,6 @@ class Fields_model extends Model {
     
     function __construct() {
         parent::__construct();
-        @session_start();
-        $_SESSION['lm_id'] = 2;
-        $_SESSION['pm_id'] = 3;
     }
 
     /**
@@ -59,7 +56,13 @@ class Fields_model extends Model {
     }
     
     public function getEntry( $field_id ){
-        $field = $this->db->select( 'SELECT * FROM fields WHERE field_id=:field_id', array('field_id' => $field_id) );
+        $query = 'SELECT * FROM fields WHERE field_id=:field_id';
+        $bindArr = array('field_id' => $field_id);
+        if( Session::get('user_type') != 'admin' ){
+            $query .= ' AND owner_id=:owner_id';
+            $bindArr['owner_id'] = Session::get('user_id');
+        }
+        $field = $this->db->select( $query, $bindArr );
         
         if( !$field ){
             return FALSE;
@@ -69,26 +72,43 @@ class Fields_model extends Model {
     }
     
     public function getList( $page ){
+        $countEntries = COUNT_ENTRIES_ON_PAGE;
+        if( Session::get('COUNT_ENTRIES_ON_PAGE') ){
+            $countEntries = Session::get('COUNT_ENTRIES_ON_PAGE');
+        }
+        
         $limit = "LIMIT ";
         if($page > 1){
-            $limit .= (($page - 1) * COUNT_ENTRIES_ON_PAGE) . ", " . COUNT_ENTRIES_ON_PAGE;
+            $limit .= (($page - 1) * $countEntries) . ", " . $countEntries;
         } else {
-            $limit .= COUNT_ENTRIES_ON_PAGE;
+            $limit .= $countEntries;
         }
-                
-        $where = "WHERE owner_id=" . Session::get('user_id');
+         
+        $where = "WHERE 1";
+        if( Session::get('user_type') != 'admin' ){
+            $where .= " AND f.owner_id=" . Session::get('user_id');
+        } 
         
         if( $this->searchKey !== '' ){
-            $where .= " AND field_label LIKE '%" . $this->searchKey . "%'";
+            $where .= " AND f.field_label LIKE '%" . $this->searchKey . "%'";
         }
         
-        $sql = "SELECT field_id, field_type, field_label FROM fields $where $limit";
-                
+        $sql = "SELECT f.field_id, f.field_type, f.field_label, f.owner_id, 
+                u.user_name as owner_name 
+                FROM fields f
+                LEFT JOIN users u ON f.owner_id = u.user_id 
+                $where $limit";
+
         $fieldsArr = $this->db->select( $sql ); 
 
-        $sql = "SELECT COUNT(*) as fields_count FROM fields $where";
+        $sql = "SELECT COUNT(*) as fields_count FROM fields f $where";
         
-        $this->_fieldsCount = $this->db->select( $sql, [], PDO::FETCH_NUM )[0][0];
+        $this->_fieldsCount = $this->db->select( $sql, [], PDO::FETCH_NUM );
+        if( !empty( $this->_fieldsCount ) ){
+            $this->_fieldsCount = $this->_fieldsCount[0][0];
+        } else {
+            $this->_fieldsCount = 0;
+        }
         
         return $fieldsArr;        
     }

@@ -25,9 +25,20 @@ class Pagination {
      */
     public function createLinks( $curPageNum, $totalRows ){
         $requestUri = preg_replace( "/[p]\d+\/?/", "", $_SERVER['REQUEST_URI']);
-        $link = URL . trim( $requestUri, '/') . '/p';
+        $link = URL . trim( $requestUri, '/');
         
-        $totalNum = (int) ceil( $totalRows / COUNT_ENTRIES_ON_PAGE );
+        if( !preg_match('/get_list/', $link) ){
+            $link .= '/get_list'; 
+        }
+        
+        $link .= '/p';
+        
+        $countEntries = COUNT_ENTRIES_ON_PAGE;
+        if( Session::get('COUNT_ENTRIES_ON_PAGE') ){
+            $countEntries = Session::get('COUNT_ENTRIES_ON_PAGE');
+        }        
+        
+        $totalNum = (int) ceil( $totalRows / $countEntries );
         $html = '';
         
         $start = $curPageNum - $this->_interval;

@@ -5,9 +5,6 @@ class Users_model extends Model {
     
     function __construct() {
         parent::__construct();
-        @session_start();
-        $_SESSION['lm_id'] = 23;
-        $_SESSION['pm_id'] = 3;
     }
 
     /**
@@ -17,39 +14,51 @@ class Users_model extends Model {
      * @param str $userType 
      * @return array
      */
-    public function getList($page, $userType){        
+    public function getList($page, $userType = null){   
         $where = "WHERE 1";
         if( !is_null($userType) ){
             switch( $userType ){
                 case "lm":
-                    $where .= " AND t2.lm_id = " . $_SESSION['lm_id'];
+                    $where .= " AND t1.user_is_lm = TRUE";
+                    
                     break;
                 case "pm":
-                    $where .= " AND t4.pm_id = " . $_SESSION['pm_id'];
+                    $where .= " AND t1.user_is_pm = TRUE";
+                    
+                    break;
+                default:
+                    break;
             }
         }
         
         if( $this->searchKey !== '' ){
             $where .= " AND t1.user_name LIKE '%" . $this->searchKey . "%'";
         }
+                
+        $countEntries = COUNT_ENTRIES_ON_PAGE;
+        if( Session::get('COUNT_ENTRIES_ON_PAGE') ){
+            $countEntries = Session::get('COUNT_ENTRIES_ON_PAGE');
+        }
         
         $limit = "LIMIT ";
         if($page > 1){
-            $limit .= (($page - 1) * COUNT_ENTRIES_ON_PAGE) . ", " 
-                    . COUNT_ENTRIES_ON_PAGE;
+            $limit .= (($page - 1) * $countEntries) . ", " 
+                    . $countEntries;
         } else {
-            $limit .= COUNT_ENTRIES_ON_PAGE;
+            $limit .= $countEntries;
         }
                 
-        $sql = "SELECT t1.user_id, t1.user_name, t1.user_email, t1.user_skype,  
+        $sql = "SELECT t1.user_id, t1.user_name, t1.user_email, t1.user_skype, t1.owner_id,  
             t6.avatar_path, t2.lm_id, t3.user_name as lm_name, 
-            t4.pm_id, t5.user_name as pm_name FROM users as t1
+            t4.pm_id, t5.user_name as pm_name, t7.user_name as owner_name 
+            FROM users as t1
             LEFT JOIN lm_users as t2 ON t2.user_id = t1.user_id 
             LEFT JOIN users as t3 ON t3.user_id = t2.lm_id
             LEFT JOIN pm_users as t4 ON t4.user_id = t1.user_id 
-            LEFT JOIN users as t5 ON t5.user_id = t4.pm_id
-            LEFT JOIN avatars as t6 ON t6.user_id = t1.user_id $where $limit";
-
+            LEFT JOIN users as t5 ON t5.user_id = t4.pm_id 
+            LEFT JOIN avatars as t6 ON t6.user_id = t1.user_id 
+            LEFT JOIN users as t7 ON t7.user_id = t1.owner_id $where $limit";
+        
         $usersArr = $this->db->select( $sql );     
         
         $sql = "SELECT COUNT(*) as users_count FROM users as t1
@@ -66,6 +75,17 @@ class Users_model extends Model {
     
     public function getRowsCount(){
         return $this->_usersCount;
+    }
+
+    public function getRelatedEntries( $user_id, $user_type ){
+        $sql = 'SELECT u.user_id, u.user_name, u.user_email, u.user_skype FROM ' . 
+                $user_type . '_users INNER JOIN users u ON ' . 
+                $user_type . '_id = u.user_id WHERE ' . $user_type . 
+                '_id=:user_id';
+        
+        $users_arr = $this->db->select( $sql, ['user_id' => $user_id], PDO::FETCH_ASSOC );
+        
+        return $users_arr;
     }
     
     public function getEntry( $user_id ){
@@ -94,7 +114,8 @@ class Users_model extends Model {
     }
     
     private function _getOwnerFields(){
-        $fields = $this->db->select( 'SELECT CONCAT("field_", field_id) as name FROM fields WHERE owner_id=:owner_id', 
+        $fields = $this->db->select( 'SELECT CONCAT("field_", field_id) as name '
+                                        . 'FROM fields WHERE owner_id=:owner_id', 
                                      array('owner_id' => Session::get('user_id') ) );
         return $fields;
     }

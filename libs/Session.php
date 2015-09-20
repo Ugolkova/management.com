@@ -9,6 +9,10 @@ class Session{
         } 
     }
     
+    public function __toString() {
+        return http_build_query( $_SESSION );
+    }
+    
     public static function destroy(){
         session_destroy();
     }

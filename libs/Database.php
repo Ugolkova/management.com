@@ -28,9 +28,7 @@ class Database extends PDO {
         if( $onDuplUpdate != '' ){
             $query .= ' ON DUPLICATE KEY UPDATE ' . $onDuplUpdate;
         }
-        
-        echo $query;
-        
+                
         $sth = $this->prepare($query);
         foreach($data as $key=>$value){
             $sth->bindValue(":$key", $value);
