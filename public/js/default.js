@@ -43,6 +43,19 @@ $(document).ready(function(){
     $('select[name=action]').change(function(){
         var action = $(location).attr('href').split("/").splice(0, 4).join("/");
         $(this).closest('form').attr('action', action + '/' + $(this).val() + '/');
+        
+        var actionVal = $(this).val();  
+
+        $(this).closest('form').find('tbody').find('tr').each(function(){
+            if( actionVal == 'edit' || 
+                    ($(this).find('input[type=checkbox]').attr('data-remove') == 'true' && 
+                        actionVal == 'delete') ){
+                $(this).find('input[type=checkbox]').prop('disabled', false);
+            } else {
+                $(this).find('input[type=checkbox]').prop('disabled', true);
+            }
+        });
+        
     });
     
     if( $('.message').length ){
@@ -104,6 +117,25 @@ $(document).ready(function(){
                 console.log( 'Can\'t change entries count.' );
             }            
         });
+    });
+    
+    $('form').submit(function(){
+        if( $('input[name=submit_action]').length ){
+            if( $('select[name=action]').val() == 'delete' ){
+                var entriesToRemove = new Array();
+                entriesToRemove.push( $(this).closest('form')
+                                          .find('tbody')
+                                          .find('tr')
+                                          .find('input:checked')
+                                          .closest('tr')
+                                                .find('td:nth-of-type(2)')
+                                                .find('a').text().replace(/(\t|\r)/g, '') );
+                console.log(entriesToRemove);
+                if( !confirm('You are going to remove entries: \t' + entriesToRemove) ){
+                    return false;
+                }
+            }
+        }
     });
     
 });

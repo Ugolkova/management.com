@@ -5,7 +5,11 @@ class Controller {
     protected $_successMessage = '';
 
     function __construct() {
-        $this->view = new View();        
+        $this->view = new View(); 
+
+        if( !in_array( get_called_class(), array('Login', 'Error') ) ){
+            Auth::handleLogin();
+        }
     }
     
     public function loadModel($name, $modelPath = "models/"){
@@ -55,15 +59,15 @@ class Controller {
             } else {
                 Session::set('msg_error', 'Any entries');
             }
-            header( "location: " . URL . $url_segment . "/get_list/" );
+            header( "location: " . URL . $url_segment . "/get_entries/" );
         } else {
             echo 'FALSE';
         }
     }
     
     public function search(){
-        if(method_exists( $this, 'get_list' ) ){
-            $list = $this->get_list();
+        if(method_exists( $this, 'get_entries' ) ){
+            $list = $this->get_entries();
             return json_encode($list);
         }
     }

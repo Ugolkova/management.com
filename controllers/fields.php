@@ -1,20 +1,46 @@
 <?php
 
-class Fields extends Controller {
+/**
+ * Fields 
+ * 
+ * don't forget we must implement all the methods of interface CRUD
+ */
+class Fields extends Controller implements CRUD{
     
-    public $availableFieldTypes = [];
+    /**
+     * Available field types
+     * 
+     * @var  array All available field types
+     * @desc If you push a field type to this array you'll see it by 
+     *       adding/editing field(s) 
+     */
+    public $availableFieldTypes = ["text", "select", "file"];
 
     function __construct() {
-        parent::__construct();
-        
-        $this->availableFieldTypes = array("text", "select", "file");
-    }
-
-    public function index(  ){
-        $this->get_list();
+        parent::__construct();        
     }
     
-    public function get_list( $page = null ){        
+    /**
+     * Index
+     * 
+     * @desc Standard method. 
+     *       We use it mostly for links like 'http://example.com/fields/'
+     */
+    public function index(){
+        $this->get_entries();
+    }
+    
+    /**
+     * Get Users according to user type and page number
+     * 
+     * @param string|NULL $param1 It can be wheter user type like 'lm' OR 'pm' or page
+     * @param string|NULL $param2 When this parameter doesn't equall NULL it's page
+     * @desc This method implements method get_entries() interface's CRUD. It's used as for backend so for frontend (autocomplete jQuery function)
+     * @access public
+     */
+    public function get_entries( $param1 = NULL, $param2 = NULL ){  
+        $page = $param1;
+        
         Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
         $this->view->token = Session::get( 'token' );  
         
@@ -36,6 +62,7 @@ class Fields extends Controller {
 
         $this->view->searchKey = $this->model->searchKey;        
         
+        // Use json_encode() output when this method is used for frontend autocomplete
         if( $this->model->searchAutocomplete ){
             $autocompleteArr = [];
             foreach($fieldsArr as $field){
@@ -49,8 +76,14 @@ class Fields extends Controller {
         }
     }
     
-    
-    protected function _validateField( $field_id = FALSE ){
+    /**
+     * Validate input data
+     * 
+     * @param int|boolean $id Parameter is set for case we validate array values like $_POST['field_id'][3] instead of $_POST['field_id']
+     * @access private
+     * @return array Field data
+     */
+    private function _validateData( $id = FALSE ){
         try{
             $this->form = new Form();
         } catch (Exception $e) {
@@ -60,33 +93,33 @@ class Fields extends Controller {
         }
         
         
-        if( isset( $_POST['field_id'][$field_id] ) ){
-            $field_id = "[" . $field_id . "]";
+        if( isset( $_POST['field_id'][$id] ) ){
+            $id = "[" . $id . "]";
             
-            $field['field_id'] = $this->form->validate('field_id' .  $field_id, 
+            $field['field_id'] = $this->form->validate('field_id' .  $id, 
                                                        'Field ID',
                                                        'integer', 
                                                        'required');   
         } else {
-            $field_id = "";
+            $id = "";
         }
         
-        $field['field_type'] = $this->form->validate('field_type' . $field_id, 
+        $field['field_type'] = $this->form->validate('field_type' . $id, 
                                                       'Field Type',
                                                       'string', 
                                                       'required');
-        $field['field_label'] = $this->form->validate('field_label' . $field_id, 
+        $field['field_label'] = $this->form->validate('field_label' . $id, 
                                                       'Field Label', 
                                                       'string', 
                                                       'required|max_length[35]|min_length[3]');
-        $field['field_instruction'] = $this->form->validate('field_instruction' . $field_id, 
+        $field['field_instruction'] = $this->form->validate('field_instruction' . $id, 
                                                              'Field Instruction', 
                                                              'string', 
                                                              '');
-        $field['field_required'] = $this->form->validate('field_required' . $field_id, 
+        $field['field_required'] = $this->form->validate('field_required' . $id, 
                                                          'Field Required', 
                                                          'boolean');
-        $field['owner_id'] = $this->form->validate('owner_id' . $field_id, 
+        $field['owner_id'] = $this->form->validate('owner_id' . $id, 
                                                    'Owner ID', 
                                                    'integer', 
                                                    'required');
@@ -97,7 +130,7 @@ class Fields extends Controller {
         foreach( $ft['options'] as $option ){
             $required = $option['required'] ? 'required' : '';
             $field_settings[$option['short_name']] = 
-                $this->form->validate( $option['short_name'] . $field_id,
+                $this->form->validate( $option['short_name'] . $id,
                                        $option['label'],
                                        'string',
                                        $required);
@@ -119,14 +152,14 @@ class Fields extends Controller {
     /**
      * Add field
      * 
-     * Firstly we check if we have post data and then save it
+     * @desc Save field if we have post data or show form to add field
      */
     public function add(){  
         Session::init();
         require_once LIBS . 'FieldTypes/FieldType.php';
 
         if( isset( $_POST['submit'] ) ){
-            $field = $this->_validateField();
+            $field = $this->_validateData();
             
             // If we have any validation errors we can save data
             if( empty( $this->form->errorMessages ) ){
@@ -136,7 +169,7 @@ class Fields extends Controller {
                     header( "location: " . URL . "fields/edit/" . $field_id );
                 } catch( Exception $e ){
                     Session::set( 'msg_error', $e->getMessage() );
-                    header( "location: " . URL . "fields/get_list/" );
+                    header( "location: " . URL . "fields/get_entries/" );
                 }
             } else {
                 Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
@@ -175,9 +208,10 @@ class Fields extends Controller {
     }
 
     /**
-     * Edit Field
+     * Edit field data
      * 
-     * @param integer $field_id
+     * @param int|boolean $field_id Use it if you edit just one field
+     * @desc If there isn't any $id and any post data redirect user on get_entries page
      */
     public function edit( $field_id = null ){ 
         require_once LIBS . 'FieldTypes/FieldType.php';
@@ -200,7 +234,7 @@ class Fields extends Controller {
             for( $i = 0; $i < $countEntries; $i++ ){
                 $this->form->errorMessages = array();
                 
-                $field = $this->_validateField( $i );
+                $field = $this->_validateData( $i );
                                 
                 // If we have any validation errors we can save data
                 if( empty( $this->form->errorMessages ) ){
@@ -243,7 +277,7 @@ class Fields extends Controller {
             }
             
             if( empty( $field_ids ) ){
-                header( "location: " . URL . "fields/get_list/" );
+                header( "location: " . URL . "fields/get_entries/" );
             }
             
             $fields = array();
@@ -271,7 +305,7 @@ class Fields extends Controller {
                 Session::delete( 'msg_error' );
                 Session::delete( 'msg_success' );
                 
-                header( "location: " . URL . "fields/get_list/" );
+                header( "location: " . URL . "fields/get_entries/" );
                 die();
             }
         }
@@ -294,7 +328,8 @@ class Fields extends Controller {
      * Get Field Type
      * 
      * @param string $type
-     * @return array
+     * @return array This method returns us array we can use to show user field options
+     * @access private
      * @throws Exception
      */
     private function _getFieldType( $type ){
@@ -320,8 +355,10 @@ class Fields extends Controller {
     }
 
     /**
+     * Get field types
      * 
-     * @return type
+     * @desc We use this method by adding or editing fields to show user all available options of different field types
+     * @return array
      */
     private function _getFieldTypes(){
         require_once LIBS . 'FieldTypes/FieldType.php';
@@ -334,3 +371,6 @@ class Fields extends Controller {
         return $fieldTypes;
     }
 }
+
+
+// PATH: controllers/fields.php

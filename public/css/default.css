@@ -374,7 +374,7 @@ table.fields td:last-child{
     z-index: 3;
 }
 .button.add{
-    right: 0px;
+    right: -8px;
     top: -103px;
 }
 menu{
@@ -434,7 +434,7 @@ menu li li.active{
 a#auth{
     line-height: 40px;
     position: absolute;
-    right: 20px;
+    right: 30px;
 }
 input[type="text"][disabled="disabled"],
 textarea[disabled="disabled"],
@@ -460,4 +460,12 @@ table + strong{
     font-size: 15px;
     line-height: 40px;
     padding-top: 10px;
+}
+
+a#loggedUser{
+    color: #FFF;
+    float: right;
+    line-height: 40px;
+    position: absolute;
+    right: 100px;
 }

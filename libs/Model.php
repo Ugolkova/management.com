@@ -9,9 +9,7 @@ class Model {
         $this->request  = new Request();
         
         $this->searchKey = $this->request->validate( 'key', 'string'); 
-        $this->searchAutocomplete = $this->request->validate( 'autocomplete', 'boolean'); 
-        
-        Session::init();
+        $this->searchAutocomplete = $this->request->validate( 'autocomplete', 'boolean');
     }
 
 }

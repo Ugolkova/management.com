@@ -14,8 +14,9 @@ class Form extends Request{
                 throw new Exception("Unknown host");
             }
         }
-        
-        if( (string)$_POST['token'] !== Session::get( "token" )){
+
+        Session::init();
+        if( (string)$_POST['token'] !== Session::get( 'token' )){
             throw new Exception("Wrong token");
         }
     }

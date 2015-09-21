@@ -6,41 +6,20 @@ class Index extends Controller {
         parent::__construct();
     }
     
+    /**
+     * Standard method
+     * 
+     * @desc redirect user on Get Users page
+     */
     function index(){
-        require_once LIBS . 'FieldTypes/FieldTypeFactory.php';
-        require_once LIBS . 'FieldTypes/FieldType.php';
-                
-        try{
-            $fields = $this->model->getFieldsList(1);
-            $userFields = $this->model->getFieldsList(12);
-            foreach($userFields as $userField){
-                array_push($fields, $userField);
-            }    
-            
-            $formFields = array();
-            foreach($fields as $field){
-                $formField = FieldTypeFactory::build($field['type']);
-                $formFields[] = $formField->render($field);
-            }            
-            $this->view->formFields = $formFields;
-        } catch (Exception $e){
-            echo $e->getMessage();
-        }    
+        header('location: ' . URL . 'users/get_entries/');        
+    }
         
-        $this->view->title  = "Home Page";        
-        $this->view->render("index/index");        
-    }
-    
-    public function add_user(){
-        $user = $this->model->addUser();
-        echo $user;
-        /*if(isset($this->request->post('abc'))){
-            echo TRUE; 
-        } else {
-            echo FALSE;
-        }*/
-    }
-    
+    /**
+     * Remove session messages
+     * 
+     * @desc Use this method for AJAX-calls
+     */
     public function removeMsg(){
         Session::init();
         
@@ -48,6 +27,11 @@ class Index extends Controller {
         Session::delete( 'msg_error' );
     }
     
+    /**
+     * Change count entries on page 
+     * 
+     * @desc Use this method for AJAX-calls
+     */
     public function changeEntriesCount(){
         Session::init();
         $count = (int)$_GET['count'];
@@ -56,5 +40,17 @@ class Index extends Controller {
             Session::set( 'COUNT_ENTRIES_ON_PAGE', $count );
         }
     }
+    
+    /**
+     * Log out
+     * 
+     * @desc Destroys session and redirect user on login page
+     */
+    function logout()
+    {
+        Session::destroy();
+        header('location: ' . URL .  'login/');
+        exit;
+    }    
 }
 

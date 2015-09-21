@@ -1,6 +1,11 @@
 <?php
 
-class Users extends Controller {
+/**
+ * Users 
+ * 
+ * don't forget we must implement all the methods of interface CRUD
+ */
+class Users extends Controller implements CRUD{
     private $_userTypes = array("lm", "pm");
     
     function __construct() {
@@ -8,10 +13,10 @@ class Users extends Controller {
     }
     
     function index(){
-        $this->get_list();
+        $this->get_entries();
     }
     
-    protected function _validateData( $id = FALSE ){
+    private function _validateData( $id = FALSE ){
         try{
             $this->form = new Form();
         } catch (Exception $e) {
@@ -28,7 +33,7 @@ class Users extends Controller {
                                                      'integer', 
                                                      'required');   
         } else {
-            $field_id = "";
+            $id = "";
         }
         
         $user['owner_id'] = $this->form->validate('owner_id' .  $id, 
@@ -76,14 +81,14 @@ class Users extends Controller {
     /**
      * This function we use to get list of users according to two parameters -
      * page and list type (LM list, PM list)
-     * get_list
-     * get_list/p12
-     * get_list/pm/p45
-     * get_list/lm/p2
+     * get_entries
+     * get_entries/p12
+     * get_entries/pm/p45
+     * get_entries/lm/p2
      * @param type $param1
      * @param type $param2
      */
-    public function get_list( $param1 = null, $param2 = null ){        
+    public function get_entries( $param1 = null, $param2 = null ){        
         $page = 1;
         $user_type = null;
 
@@ -145,7 +150,7 @@ class Users extends Controller {
                     header( "location: " . URL . "users/edit/" . $user_id );
                 } catch( Exception $e ){
                     Session::set( 'msg_error', $e->getMessage() );
-                    header( "location: " . URL . "users/get_list/" );
+                    header( "location: " . URL . "users/get_entries/" );
                 }
             } else {
                 Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
@@ -247,7 +252,7 @@ class Users extends Controller {
             }
 
             if( empty( $user_ids ) ){
-                header( "location: " . URL . "users/get_list/" );
+                header( "location: " . URL . "users/get_entries/" );
             }
             $users = array();
             foreach( $user_ids as $u_id ){
@@ -262,7 +267,7 @@ class Users extends Controller {
                 Session::delete( 'msg_error' );
                 Session::delete( 'msg_success' );
                 
-                header( "location: " . URL . "users/get_list/" );
+                header( "location: " . URL . "users/get_entries/" );
                 die();
             }            
         } 

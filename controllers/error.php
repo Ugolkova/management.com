@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Error Class
+ * 
+ * use to show 404 Error
+ */
+
 class Error extends Controller {
 
     function __construct() {
@@ -11,3 +17,4 @@ class Error extends Controller {
     }
 }
 
+// PATH: controllers/error.php

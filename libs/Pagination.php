@@ -27,8 +27,8 @@ class Pagination {
         $requestUri = preg_replace( "/[p]\d+\/?/", "", $_SERVER['REQUEST_URI']);
         $link = URL . trim( $requestUri, '/');
         
-        if( !preg_match('/get_list/', $link) ){
-            $link .= '/get_list'; 
+        if( !preg_match('/get_entries/', $link) ){
+            $link .= '/get_entries'; 
         }
         
         $link .= '/p';

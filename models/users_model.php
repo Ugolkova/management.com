@@ -58,7 +58,7 @@ class Users_model extends Model {
             LEFT JOIN users as t5 ON t5.user_id = t4.pm_id 
             LEFT JOIN avatars as t6 ON t6.user_id = t1.user_id 
             LEFT JOIN users as t7 ON t7.user_id = t1.owner_id $where $limit";
-        
+
         $usersArr = $this->db->select( $sql );     
         
         $sql = "SELECT COUNT(*) as users_count FROM users as t1
