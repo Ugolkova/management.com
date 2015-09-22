@@ -56,11 +56,21 @@ class Users extends Controller implements CRUD{
             $user['user_email'] = $this->form->validate('user_email' . $id, 
                                                         'User Email', 
                                                         'string', 
-                                                        'required|max_length[35]|min_length[3]');
+                                                        'required|maxlength[35]|minlength[3]');
             $user['user_skype'] = $this->form->validate('user_skype' . $id, 
                                                         'User Skype', 
                                                         'string', 
                                                         'required');
+        }
+        
+        $user['user_type'] = $this->form->validate('user_type' . $id, 
+                                                    'User Type', 
+                                                    'string', 
+                                    'required|in_array[admin, manager, user]');
+        
+        // Just admin is available to create LMs and PMs
+        if( Session::get( 'user_type' ) !== 'admin' ){
+            $user['user_type'] = 'user';
         }
         
         $ownerFields = $this->model->getFieldsData();
@@ -68,7 +78,8 @@ class Users extends Controller implements CRUD{
             $user['field_' . $field['field_id']] = $this->form->validate('field_' . $field['field_id'] . $id, 
                                                     $field['field_label'], 
                                                     'string', 
-                                                    $field['field_required'] ? 'required' : '');
+                                                    $field['validate_action'] . 
+                            ( $field['field_required'] ? 'required' : '' ) );
         }
         
         

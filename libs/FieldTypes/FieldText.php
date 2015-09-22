@@ -4,8 +4,8 @@ class FieldText extends FieldType {
     function __construct() {
         parent::__construct();
         
-        $this->_setOptions( 'Maxlength', 'maxlength', 20, FALSE, 'Max length of the field' );
-        $this->_setOptions( 'Minlength', 'minlength', 5 );
+        $this->_setOptions( 'Maxlength', 'maxlength', 20, FALSE, 'Max length of the field', TRUE );
+        $this->_setOptions( 'Minlength', 'minlength', 5, TRUE, '', TRUE );
         $this->_setOptions( 'Placeholder', 'placeholder' );
     }
         

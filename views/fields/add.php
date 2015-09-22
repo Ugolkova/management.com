@@ -68,7 +68,11 @@ $(document).ready(function(){
             <tbody>
                 <?php foreach($field['options'] as $option): ?>
                 <tr>
-                    <td><?php echo $option['label']; ?></td>
+                    <td>
+                        <label class="<?php if( $option['required'] ): ?>required<?php endif; ?>">
+                        <?php echo $option['label']; ?>
+                        </label>
+                    </td>
                     <td>
                         <?php if($option['instruction'] != ''): ?>
                         <small><?php echo $option['instruction']; ?></small>

@@ -3,6 +3,10 @@
     
     <table>
         <input type="hidden" name="owner_id" value="<?php echo $this->user['owner_id']; ?>" />
+        <?php if( Session::get('user_type') !== 'admin' ): ?>
+        <input type="hidden" name="user_type" value="user" />
+        <?php endif; ?>
+        
         <thead>
             <tr>
                 <th colspan="2">User Data</th>
@@ -26,7 +30,19 @@
                 <td><label class="required">User Skype</label></td>
                 <td><input type="text" name="user_skype" value="<?php echo $this->user['user_skype']; ?>" class="<?php echo $this->isErrorField("user_skype") ? 'error' : ''; ?>" /></td>
             </tr>
-
+            <?php if( Session::get('user_type') === 'admin' ): ?>
+            <tr>
+                <td><label class="required">User Type</label></td>
+                <td>
+                    <select name="user_type">
+                        <option value="admin">Admin</option>
+                        <option value="manager">Manager</option>
+                        <option value="user">User</option>
+                    </select>
+                </td>
+            </tr>
+            <?php endif; ?>
+            
             <!-- END Standard User Data -->
             <?php if( COUNT( $this->user_fields ) ): ?>
             <tr>

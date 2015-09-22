@@ -65,23 +65,23 @@ class Form extends Request{
         
     private function _setRule( $param ){
         $val = '';
-        preg_match( '/(?<param>\w+)\[(?<val>\w+)\]$/', $param, $matches);
+        preg_match( '/(?<param>\w+)\[(?<val>[\w\,\s]+)\]$/', $param, $matches);
         if( $matches ){
             $param = $matches['param'];
             $val = $matches['val'];
         }
         
         switch($param){
-            case 'max_length':
+            case 'maxlength':
                 if( strlen( $this->_fValue ) > (int)$val ){
-                    $this->errorMessages[] = $this->_fLabel . ': max length - ' . $val;
+                    $this->errorMessages[] = $this->_fLabel . ': Max Length - ' . $val;
                     $this->errorFields[] = $this->_fName;
                 }
                 
                 break;
-            case 'min_length':
+            case 'minlength':
                 if( strlen( $this->_fValue ) < (int)$val ){
-                    $this->errorMessages[] = $this->_fLabel . ': min length - ' . $val;
+                    $this->errorMessages[] = $this->_fLabel . ': Min Length - ' . $val;
                     $this->errorFields[] = $this->_fName;
                 }
                 
@@ -91,6 +91,16 @@ class Form extends Request{
                     $this->errorMessages[] = $this->_fLabel . ': is required';
                     $this->errorFields[] = $this->_fName;
                 }
+                
+                break;
+            case 'in_array':
+                $availableValues = explode( MAIN_DELIMITER, $val );
+                
+                if( !in_array( $this->_fValue, $availableValues ) ){
+                    $this->errorMessages[] = $this->_fLabel . ': must be in array - ' .
+                                             $val;
+                }
+                
                 break;
             default:
                 break;

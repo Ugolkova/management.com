@@ -5,6 +5,10 @@
     <table>
         <input type="hidden" name="owner_id[<?php echo $k; ?>]" value="<?php echo $user['owner_id']; ?>" />
         <input type="hidden" name="user_id[<?php echo $k; ?>]" value="<?php echo $user['user_id']; ?>" />
+        
+        <?php if( Session::get('user_type') !== 'admin' ): ?>
+        <input type="hidden" name="user_type[<?php echo $k; ?>]" value="user" />
+        <?php endif; ?>
         <thead>
             <tr>
                 <th colspan="2">User Data</th>
@@ -32,6 +36,19 @@
                 <td><label class="required">User Skype</label></td>
                 <td><input type="text" name="user_skype[<?php echo $k; ?>]" value="<?php echo $user['user_skype']; ?>" class="<?php echo $this->isErrorField("user_skype[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?>/></td>
             </tr>
+
+            <?php if( Session::get('user_type') === 'admin' ): ?>
+            <tr>
+                <td><label class="required">User Type</label></td>
+                <td>
+                    <select name="user_type[<?php echo $k; ?>]">
+                        <option value="admin"<?php if( $user['user_type'] == 'admin' ): ?> selected="selected"<?php endif; ?>>Admin</option>
+                        <option value="manager"<?php if( $user['user_type'] == 'manager' ): ?> selected="selected"<?php endif; ?>>Manager</option>
+                        <option value="user"<?php if( $user['user_type'] == 'user' ): ?> selected="selected"<?php endif; ?>>User</option>
+                    </select>
+                </td>
+            </tr>
+            <?php endif; ?>
 
             <!-- END Standard User Data -->
             <?php if( COUNT( $this->user_fields[$k] ) ): ?>

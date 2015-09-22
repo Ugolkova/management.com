@@ -10,6 +10,7 @@
         
         <script src="<?php echo URL; ?>public/js/default.js"></script>
         <link rel="stylesheet" type="text/css" href="<?php echo URL; ?>public/css/default.css" />
+        <link rel='shortcut icon' href='<?php echo URL; ?>public/img/favicon.ico' type='image/x-icon'>
     </head>
     <body>    
     <?php echo $this->printMessage(); ?>

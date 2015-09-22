@@ -111,7 +111,7 @@ class Fields extends Controller implements CRUD{
         $field['field_label'] = $this->form->validate('field_label' . $id, 
                                                       'Field Label', 
                                                       'string', 
-                                                      'required|max_length[35]|min_length[3]');
+                                                      'required|maxlength[35]|minlength[3]');
         $field['field_instruction'] = $this->form->validate('field_instruction' . $id, 
                                                              'Field Instruction', 
                                                              'string', 
@@ -137,7 +137,7 @@ class Fields extends Controller implements CRUD{
         }
 
         if( isset($field_settings['options']) ){
-            $options = explode(FIELD_OPTIONS_DELIMITER, $field_settings['options']);
+            $options = explode(MAIN_DELIMITER, $field_settings['options']);
             foreach($options as &$option){
                 $option = trim( $option );
             }
@@ -180,7 +180,7 @@ class Fields extends Controller implements CRUD{
             
             if( isset( $field['field_settings']['options'] ) ){
                 $field['field_settings']['options'] = 
-                        implode( FIELD_OPTIONS_DELIMITER, 
+                        implode( MAIN_DELIMITER, 
                                  $field['field_settings']['options'] );
             }    
         } else {  
@@ -253,7 +253,7 @@ class Fields extends Controller implements CRUD{
                 
                 if( isset( $field['field_settings']['options'] ) ){
                     $field['field_settings']['options'] = 
-                            implode( FIELD_OPTIONS_DELIMITER, 
+                            implode( MAIN_DELIMITER, 
                                      $field['field_settings']['options'] );
                 }
                 
@@ -292,7 +292,7 @@ class Fields extends Controller implements CRUD{
                 $field['field_settings'] = unserialize($field['field_settings']);
                 if( isset( $field['field_settings']['options'] ) ){
                     $field['field_settings']['options'] = 
-                            implode( FIELD_OPTIONS_DELIMITER, 
+                            implode( MAIN_DELIMITER, 
                                      $field['field_settings']['options'] );
                 }
 

@@ -15,20 +15,31 @@ abstract class FieldType {
      * @param string $value
      * @param boolean $required
      * @param string $instruction
+     * @param boolean $validate
      */
-    protected function _setOptions($label, $short_name, $value = '', $required = FALSE, $instruction = ''){
+    protected function _setOptions($label, $short_name, $value = '', $required = FALSE, $instruction = '', $validate = FALSE){
         $this->_options[] = array(
-            'label'       => $label,
-            'short_name'  => $short_name,
-            'value'       => $value,
-            'instruction' => $instruction,
-            'required'    => $required
+            'label'         => $label,
+            'short_name'    => $short_name,
+            'value'         => $value,
+            'instruction'   => $instruction,
+            'required'      => $required,
+            'validate'      => $validate
         );
     }    
     
     public function getOptions(){
         return $this->_options;
     }
+
+    public function getOptionsToValidate(){
+        $options = [];
+        foreach( $this->_options as $option ){
+            if( $option['validate'] ){
+                $options[] = $option['label'];
+            }
+        }
+    }    
     
     abstract function render($data);
 

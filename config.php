@@ -18,4 +18,4 @@ define( 'COUNT_ENTRIES_ON_PAGE', $GLOBALS['COUNTS_ENTRIES_AVAILABLE'][0] );
 define( 'HASH_GENERAL_KEY', 'gf<<qJ(&oeXehfE' );
 define( 'HASH_PASSWORD_KEY', 'catsFLYhigh2000miles' );
 
-define( 'FIELD_OPTIONS_DELIMITER', ', ' );
+define( 'MAIN_DELIMITER', ', ' );

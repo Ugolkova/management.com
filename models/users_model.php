@@ -121,10 +121,59 @@ class Users_model extends Model {
     }
     
     public function getFieldsData(){
+        require_once LIBS . 'FieldTypes/FieldType.php';
+        
         $fields = $this->db->select( 'SELECT * FROM fields WHERE owner_id=:owner_id', 
-                                     array('owner_id' => Session::get('user_id') ) );  
+                                     array('owner_id' => Session::get('user_id') ) ); 
+        if( !empty( $fields ) ){
+            foreach( $fields as &$field ){
+                $f = $this->_getFieldType($field['field_type']);
+                $f_settings = unserialize($field['field_settings']);
+
+                $validate_options = [];
+                foreach( $f['options'] as $option ){
+                    if( $option['validate'] ){
+                        $validate_options[$option['short_name']] = 
+                                $f_settings[$option['short_name']];
+                    }
+                }
+
+                $validate_action = '';
+                foreach( $validate_options as $key=>$value ){
+                    $validate_action .= $key . '[' . $value . ']|';
+                }
+                $validate_action = rtrim( $validate_action, '|' );
+                
+                $field['validate_action'] = $validate_action;
+            }
+            
+        }
+
         return $fields;
     }
+    
+    private function _getFieldType( $type ){
+        if(file_exists(LIBS . 'FieldTypes/Field' . ucfirst($type) . '.php')){
+            require_once LIBS . 'FieldTypes/Field' . ucfirst($type) . '.php';
+
+            $className = 'Field' . ucfirst($type);
+
+            if(class_exists($className)){
+                $field = new $className;
+                $fieldType = array(
+                    'type' => $type,
+                    'options' => $field->getOptions()
+                );
+            } else {
+                throw new Exception("Class " . $className . " doesn't exist");
+            }
+        } else {
+            throw new Exception("Field Type " . $type . " doesn't exist.");
+        }  
+        
+        return $fieldType;
+    }
+    
     
     public function save( $user ){
         $user_id = NULL;
