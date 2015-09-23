@@ -1,3 +1,5 @@
+<script src="<?php echo URL; ?>public/js/users/add.js"></script>
+
 <form action="<?php echo URL; ?>users/add/" method="POST" class="publishForm fieldsForm usersForm">
     <input type="hidden" name="token" value="<?php echo $this->token; ?>" />
     

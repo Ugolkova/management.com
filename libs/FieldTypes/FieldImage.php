@@ -7,15 +7,14 @@ class FieldImage extends FieldType {
     
     /**
      * Render form element
+     * 
      * @param array $data
-     * @return string
-     */
+     * @return Array Contains keys ['label', 'instruction', 'tag']
+     */    
     public function render($data){
-        $element = $this->_setLabel($data['label'], $data['required']);
-        $element .= '<input type="file" name="field_' . $data['id'] . '" value="" '. $this->_isRequired($data['required']) .' />';
-        if(isset($data['value'])){
-            $element .= '<img class="imgField" src="' . $data['value'] . '" alt="Image" />';
-        }
+        $element['label'] = '';
+        $element['instruction'] = '';
+        $element['tag'] = '';
         
         return $element;
     }

@@ -9,7 +9,7 @@ $(document).ready(function(){
         var elements = $(this).closest('table')
                               .find('tbody')
                               .find('tr')
-                              .find('input[type=checkbox]');
+                              .find('input[type=checkbox]:enabled');
         if( $(this).is(':checked') ){
             elements.prop('checked', true);
             elements.each(function(){

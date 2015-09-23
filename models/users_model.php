@@ -10,8 +10,8 @@ class Users_model extends Model {
     /**
      * Get list of users according page, userType and userId
      * 
-     * @param int $page
-     * @param str $userType 
+     * @param integer $page
+     * @param string $userType 
      * @return array
      */
     public function getList($page, $userType = null){   
@@ -73,10 +73,22 @@ class Users_model extends Model {
         return $usersArr;
     }
     
+    /**
+     * Get rows count
+     * 
+     * @return string
+     */
     public function getRowsCount(){
         return $this->_usersCount;
     }
 
+    /**
+     * Get related entries
+     * 
+     * @param integer $user_id
+     * @param string $user_type
+     * @return array Users Array
+     */
     public function getRelatedEntries( $user_id, $user_type ){
         $sql = 'SELECT u.user_id, u.user_name, u.user_email, u.user_skype FROM ' . 
                 $user_type . '_users INNER JOIN users u ON ' . 
@@ -88,7 +100,14 @@ class Users_model extends Model {
         return $users_arr;
     }
     
-    public function getEntry( $user_id ){
+    /**
+     * Get entry
+     * 
+     * @param integer|NULL $user_id
+     * @param string|NULL $user_name
+     * @return boolean
+     */
+    public function getEntry( $user_id = '', $user_name = NULL ){
         $owner_fields = $this->_getOwnerFields();
         $fields = '';
         foreach($owner_fields as $field){
@@ -99,13 +118,25 @@ class Users_model extends Model {
         if( $fields !== '' ){
             $fields = ', ' . $fields;
         }
-
+        
+        $bindArr['owner_id'] = Session::get( 'user_id' );
+        
+        if( $user_id !== NULL && $user_name !== NULL ){
+            $where = 'u.user_id=:user_id AND u.user_name=:user_name';
+            $bindArr['user_id'] = $user_id;
+            $bindArr['user_name'] = $user_name;
+        } else if( $user_id !== NULL ){
+            $where = 'u.user_id=:user_id';
+            $bindArr['user_id'] = $user_id;
+        } else if( $user_name !== NULL ){
+            $where = 'u.user_name=:user_name';
+            $bindArr['user_name'] = $user_name;            
+        }
+        
         $user = $this->db->select( 'SELECT u.*' . $fields .' FROM users as u 
                                     LEFT JOIN user_fields uf 
                                         ON uf.user_id = u.user_id AND uf.owner_id = :owner_id
-                                    WHERE u.user_id=:user_id', 
-                                    array( 'owner_id' => Session::get( 'user_id' ),
-                                            'user_id' => $user_id) );
+                                    WHERE ' . $where, $bindArr );
         if( !$user ){
             return FALSE;
         }
@@ -113,6 +144,11 @@ class Users_model extends Model {
         return $user;
     }
     
+    /**
+     * Get owner fields 
+     * 
+     * @return array Fields
+     */
     private function _getOwnerFields(){
         $fields = $this->db->select( 'SELECT CONCAT("field_", field_id) as name '
                                         . 'FROM fields WHERE owner_id=:owner_id', 
@@ -120,18 +156,35 @@ class Users_model extends Model {
         return $fields;
     }
     
+    /**
+     * Get fields data
+     * 
+     * @return array Fields
+     */
     public function getFieldsData(){
         require_once LIBS . 'FieldTypes/FieldType.php';
         
         $fields = $this->db->select( 'SELECT * FROM fields WHERE owner_id=:owner_id', 
                                      array('owner_id' => Session::get('user_id') ) ); 
+        
+        /*
+         * Use following code to find out validate action
+         * 
+         * For example:
+         * FieldText has option maxlength which we must validate (validate == TRUE)
+         * but we have to find out the value for this action => maxlength[15]
+         */
+        $fieldType = [];
         if( !empty( $fields ) ){
             foreach( $fields as &$field ){
-                $f = $this->_getFieldType($field['field_type']);
+                $fType = $field['field_type'];
+                if( !isset( $fieldType[$fType] ) ){
+                    $fieldType[$fType] = $this->_getFieldType($fType);
+                }
                 $f_settings = unserialize($field['field_settings']);
 
                 $validate_options = [];
-                foreach( $f['options'] as $option ){
+                foreach( $fieldType[$fType]['options'] as $option ){
                     if( $option['validate'] ){
                         $validate_options[$option['short_name']] = 
                                 $f_settings[$option['short_name']];
@@ -142,7 +195,6 @@ class Users_model extends Model {
                 foreach( $validate_options as $key=>$value ){
                     $validate_action .= $key . '[' . $value . ']|';
                 }
-                $validate_action = rtrim( $validate_action, '|' );
                 
                 $field['validate_action'] = $validate_action;
             }
@@ -152,6 +204,14 @@ class Users_model extends Model {
         return $fields;
     }
     
+    /**
+     * Get field type. Use to get Field Options
+     * 
+     * @param string $type
+     * @return array Array with keys ['type', 'options']
+     * @access private
+     * @throws Exception
+     */
     private function _getFieldType( $type ){
         if(file_exists(LIBS . 'FieldTypes/Field' . ucfirst($type) . '.php')){
             require_once LIBS . 'FieldTypes/Field' . ucfirst($type) . '.php';
@@ -174,7 +234,13 @@ class Users_model extends Model {
         return $fieldType;
     }
     
-    
+    /**
+     * Save user data
+     * 
+     * @param array $user
+     * @return integer
+     * @throws Exception
+     */
     public function save( $user ){
         $user_id = NULL;
         if( isset( $user['user_id'] ) ){
@@ -182,6 +248,14 @@ class Users_model extends Model {
             unset( $user['user_id'] );
         }
 
+        if( isset( $user['user_name'] ) ){
+            $existingUser = $this->getEntry( NULL, $user['user_name'] );  
+        
+            if( $existingUser ){
+                throw new Exception( 'User <a href="' . URL . 'users/edit/' . $existingUser['user_id'] . '">' . $existingUser['user_name'] . '</a> already exists' );
+            }
+        }
+        
         // Data Array for table 'users'
         $u_table_data = array();
         // Data Array for table 'user_fields'
@@ -236,6 +310,11 @@ class Users_model extends Model {
         return $user_id;
     }
     
+    /**
+     * Delete User
+     * 
+     * @param integer $user_id
+     */
     public function delete( $user_id ){
         $this->db->delete( 'users', 'user_id=' . $user_id );
     }    

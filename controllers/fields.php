@@ -14,7 +14,7 @@ class Fields extends Controller implements CRUD{
      * @desc If you push a field type to this array you'll see it by 
      *       adding/editing field(s) 
      */
-    public $availableFieldTypes = ["text", "select", "file"];
+    public $availableFieldTypes = ["text", "select", "file", "checkbox"];
 
     function __construct() {
         parent::__construct();        
@@ -31,10 +31,10 @@ class Fields extends Controller implements CRUD{
     }
     
     /**
-     * Get Users according to user type and page number
+     * Get Fields according to page number
      * 
-     * @param string|NULL $param1 It can be wheter user type like 'lm' OR 'pm' or page
-     * @param string|NULL $param2 When this parameter doesn't equall NULL it's page
+     * @param string|NULL $param1 Page number. Must look like '[p]\d+'
+     * @param string|NULL $param2 Now we don't use this parameter but we need it to implement interface CRUD
      * @desc This method implements method get_entries() interface's CRUD. It's used as for backend so for frontend (autocomplete jQuery function)
      * @access public
      */
@@ -150,9 +150,9 @@ class Fields extends Controller implements CRUD{
     }
     
     /**
-     * Add field
+     * Add Field
      * 
-     * @desc Save field if we have post data or show form to add field
+     * @desc Save Field if we have post data or show form to add Field
      */
     public function add(){  
         Session::init();
@@ -208,10 +208,10 @@ class Fields extends Controller implements CRUD{
     }
 
     /**
-     * Edit field data
+     * Edit Field Data
      * 
      * @param int|boolean $field_id Use it if you edit just one field
-     * @desc If there isn't any $id and any post data redirect user on get_entries page
+     * @desc If there isn't any $id and any $_POST['field_id'] redirect user on get_entries page
      */
     public function edit( $field_id = null ){ 
         require_once LIBS . 'FieldTypes/FieldType.php';

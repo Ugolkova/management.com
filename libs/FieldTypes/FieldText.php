@@ -13,8 +13,8 @@ class FieldText extends FieldType {
      * Render form element
      * 
      * @param array $data
-     * @return array
-     */
+     * @return Array Contains keys ['label', 'instruction', 'tag']
+     */ 
     public function render($data){
         $element['label'] = $this->_setLabel($data['field_label'], $data['field_required']);
         $element['instruction'] = $data['field_instruction'];

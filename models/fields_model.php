@@ -55,6 +55,12 @@ class Fields_model extends Model {
         return $field_id;
     }
     
+    /**
+     * Get entry
+     * 
+     * @param integer $field_id FieldID
+     * @return boolean
+     */
     public function getEntry( $field_id ){
         $query = 'SELECT * FROM fields WHERE field_id=:field_id';
         $bindArr = array('field_id' => $field_id);
@@ -71,6 +77,12 @@ class Fields_model extends Model {
         return $field;
     }
     
+    /**
+     * Get List of entries
+     * 
+     * @param integer $page
+     * @return array Entries list
+     */
     public function getList( $page ){
         $countEntries = COUNT_ENTRIES_ON_PAGE;
         if( Session::get('COUNT_ENTRIES_ON_PAGE') ){
@@ -113,10 +125,20 @@ class Fields_model extends Model {
         return $fieldsArr;        
     }
     
+    /**
+     * Get count of rows
+     * 
+     * @return integer
+     */
     public function getRowsCount(){
         return $this->_fieldsCount;
     }
  
+    /**
+     * Delete Field
+     * 
+     * @param integer $field_id
+     */
     public function delete( $field_id ){
         $this->db->delete( 'fields', 'field_id=' . $field_id );
         $this->db->alterTable( 'ALTER TABLE `user_fields` DROP field_' . $field_id );

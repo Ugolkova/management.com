@@ -1,3 +1,5 @@
+<a href="<?php echo URL; ?>users/add" class="button add">Add User</a>
+
 <form action="<?php echo URL; ?>users/edit/<?php echo ( ($this->user_id !== NULL) ? $this->user_id . '/' : '' ) ; ?>" method="POST" class="publishForm fieldsForm usersForm">
     <input type="hidden" name="token" value="<?php echo $this->token; ?>" />
     

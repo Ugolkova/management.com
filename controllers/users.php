@@ -12,10 +12,76 @@ class Users extends Controller implements CRUD{
         parent::__construct();
     }
     
+    /**
+     * Index
+     * 
+     * @desc Standard method. 
+     *       We use it mostly for links like 'http://example.com/users/'
+     */    
     function index(){
         $this->get_entries();
     }
-    
+     
+    /**
+     * Get Users according to user type and page number
+     * 
+     * @param string|NULL $param1 It can be wheter user type like 'lm' OR 'pm' or page
+     * @param string|NULL $param2 When this parameter doesn't equall NULL it's page
+     * @desc This method implements method get_entries() interface's CRUD. It's used as for backend so for frontend (autocomplete jQuery function)
+     * @access public
+     */
+    public function get_entries( $param1 = null, $param2 = null ){        
+        $page = 1;
+        $user_type = null;
+
+        if( !is_null($param1) ){
+            if(preg_match('/^p(\d+)$/', $param1, $matches) === 1){
+                $page = (int)$matches[1];
+            } else {
+                $param1 = strtolower($param1);
+                if(in_array($param1, $this->_userTypes)){
+                    $user_type = $param1;
+                    if(preg_match('/^p(\d+)$/', $param2, $matches) === 1){
+                        $page  = (int)$matches[1];
+                    }
+                }    
+            }
+        }
+        
+        $usersArr   = $this->model->getList($page, $user_type);
+        $usersCount = $this->model->getRowsCount();        
+        
+        $this->view->users      = $usersArr;
+        $this->view->usersCount = $usersCount;
+        
+        Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
+        $this->view->token = Session::get( 'token' );         
+        
+        $pagination = new Pagination();
+        $this->view->pagination = $pagination->createLinks($page, $usersCount);
+        
+        $this->view->searchKey = $this->model->searchKey;        
+
+        if( $this->model->searchAutocomplete ){
+            $autocompleteArr = [];
+            foreach($usersArr as $user){
+                $autocompleteArr[] = array( 'link' => URL . 'users/edit/' . 
+                                                      $user['user_id'] . '/',
+                                            'name' => $user['user_name'] );
+            }
+            echo json_encode($autocompleteArr);
+        } else {
+            $this->view->render("users/list");
+        }    
+    }
+
+    /**
+     * Validate input data
+     * 
+     * @param int|boolean $id Parameter is set for case we validate array values like $_POST['user_id'][3] instead of $_POST['user_id']
+     * @access private
+     * @return array User data
+     */    
     private function _validateData( $id = FALSE ){
         try{
             $this->form = new Form();
@@ -79,71 +145,17 @@ class Users extends Controller implements CRUD{
                                                     $field['field_label'], 
                                                     'string', 
                                                     $field['validate_action'] . 
-                            ( $field['field_required'] ? 'required' : '' ) );
+                            ( $field['field_required'] ? 'required' : '' ) );    
         }
-        
         
         return $user;
     }
     
-    
-    
-    
     /**
-     * This function we use to get list of users according to two parameters -
-     * page and list type (LM list, PM list)
-     * get_entries
-     * get_entries/p12
-     * get_entries/pm/p45
-     * get_entries/lm/p2
-     * @param type $param1
-     * @param type $param2
-     */
-    public function get_entries( $param1 = null, $param2 = null ){        
-        $page = 1;
-        $user_type = null;
-
-        if( !is_null($param1) ){
-            if(preg_match('/^p(\d+)$/', $param1, $matches) === 1){
-                $page = (int)$matches[1];
-            } else {
-                $param1 = strtolower($param1);
-                if(in_array($param1, $this->_userTypes)){
-                    $user_type = $param1;
-                    if(preg_match('/^p(\d+)$/', $param2, $matches) === 1){
-                        $page  = (int)$matches[1];
-                    }
-                }    
-            }
-        }
-        
-        $usersArr   = $this->model->getList($page, $user_type);
-        $usersCount = $this->model->getRowsCount();        
-        
-        $this->view->users      = $usersArr;
-        $this->view->usersCount = $usersCount;
-        
-        Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
-        $this->view->token = Session::get( 'token' );         
-        
-        $pagination = new Pagination();
-        $this->view->pagination = $pagination->createLinks($page, $usersCount);
-        
-        $this->view->searchKey = $this->model->searchKey;        
-
-        if( $this->model->searchAutocomplete ){
-            $autocompleteArr = [];
-            foreach($usersArr as $user){
-                $autocompleteArr[] = array( 'link' => URL . 'users/edit/' . 
-                                                      $user['user_id'] . '/',
-                                            'name' => $user['user_name'] );
-            }
-            echo json_encode($autocompleteArr);
-        } else {
-            $this->view->render("users/list");
-        }    
-    }
-    
+     * Add User
+     * 
+     * @desc Save User if we have post data or show form to add User
+     */    
     public function add(){  
         require_once LIBS . 'FieldTypes/FieldTypeFactory.php';        
         require_once LIBS . 'FieldTypes/FieldType.php';
@@ -203,6 +215,12 @@ class Users extends Controller implements CRUD{
         $this->view->render("users/add");
     }
     
+    /**
+     * Edit User Data
+     * 
+     * @param int|boolean $user_id Use it if you edit just one User
+     * @desc If there isn't any $user_id and any $_POST['user_id'] redirect User on get_entries page
+     */    
     public function edit( $user_id = NULL ){
         require_once LIBS . 'FieldTypes/FieldTypeFactory.php';        
         require_once LIBS . 'FieldTypes/FieldType.php';

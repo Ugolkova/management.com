@@ -22,6 +22,11 @@ class View {
         $this->_errorFields = $fields;
     }
     
+    /**
+     * Print message
+     * 
+     * @return string
+     */
     public function printMessage(){
         $msg_block = '';
 
@@ -55,6 +60,13 @@ class View {
         return $msg_block;
     }
     
+    /**
+     * Check if it's an error field
+     * 
+     * @param string $name
+     * @desc Use in view
+     * @return boolean
+     */
     public function isErrorField( $name ){
         if(in_array($name, $this->_errorFields) ){
             return TRUE;
@@ -63,6 +75,11 @@ class View {
         return FALSE;
     }
     
+    /**
+     * Render template
+     * 
+     * @param string $name
+     */
     public function render($name){
         require "views/header.php";
         require "views/" . $name . ".php";

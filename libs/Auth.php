@@ -1,6 +1,15 @@
 <?php
 
+/**
+ * Auth Class
+ * 
+ */
 class Auth {
+    
+    /**
+     * Check if user is logged in
+     * If he isn't redirect him to Login Page
+     */
     public static function handleLogin()
     {
         Session::init();

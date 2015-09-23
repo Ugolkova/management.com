@@ -1,13 +1,4 @@
-<script>
-$(document).ready(function(){
-    $('select[name*=field_type]').change(function(){
-        var fieldType = $(this).val();
-        
-        $('.fieldOptions').fadeOut(0);
-        $('#ft_' + fieldType).fadeIn(50);
-    }).change();
-});    
-</script>
+<script src="<?php echo URL; ?>public/js/fields/add.js"></script>
 
 <form action="<?php echo URL; ?>fields/add" method="POST" class="publishForm fieldsForm">
     <input type="hidden" name="token" value="<?php echo $this->token; ?>" />

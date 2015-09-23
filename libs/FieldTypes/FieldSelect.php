@@ -4,14 +4,16 @@ class FieldSelect extends FieldType {
     function __construct() {
         parent::__construct();
         
-        $this->_setOptions('Options', 'options', '', FALSE, 'Use comma to separate items');
+        $this->_setOptions('Options', 'options', '', FALSE, 'Use following ' .
+                'sign <b>"' . MAIN_DELIMITER . '"</b> to separate items');
     }
     
     /**
      * Render form element
+     * 
      * @param array $data
-     * @return string
-     */
+     * @return Array Contains keys ['label', 'instruction', 'tag']
+     */ 
     public function render($data){
         $element['label'] = $this->_setLabel($data['field_label'], $data['field_required']); 
         $element['instruction'] = $data['field_instruction'];

@@ -51,6 +51,15 @@ class Request {
         } 
     }    
     
+    /**
+     * Validate data
+     * 
+     * @param String $name Example: $_GET[$name]
+     * @param String $type Filter type
+     * 
+     * @desc Use it for $_GET[]
+     * @return String Value
+     */
     public function validate( $name, $type ){
         if( isset($_GET[$name]) ){
             $this->_fValue = $_GET[$name];

@@ -8,7 +8,8 @@ class Index_model extends Model{
 
     /**
      * Get list of fields according to owner id
-     * @param int $ownerId
+     * 
+     * @param integer $ownerId
      */
     public function getFieldsList($ownerId){
         $fields = array();
@@ -88,9 +89,6 @@ class Index_model extends Model{
         
         return $fields;
     }
-    
-    public function addUser(){
-        return $this->request->post('field_1');
-    }
+
 }
 

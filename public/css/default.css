@@ -469,3 +469,7 @@ a#loggedUser{
     position: absolute;
     right: 100px;
 }
+
+.fieldsForm td + td label{
+    font-weight: normal;
+}

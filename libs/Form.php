@@ -29,19 +29,26 @@ class Form extends Request{
      */
     private function _input( $name ){        
         preg_match('/(?<name>\w+)\[(?<index>\d+)\]/', $name, $matches);
+        $data = '';
         
         if($matches){
             $name = $matches['name'];
             $index = $matches['index'];
             
             if( isset($_POST[$name][$index]) ){
-                $this->_fValue = $_POST[$name][$index];
+                $data = $_POST[$name][$index];
             }
         } else {
             if( isset($_POST[$name]) ){
-                $this->_fValue = $_POST[$name];
+                $data = $_POST[$name];
             }    
         }  
+
+        if( is_array( $data ) ){
+            $this->_fValue = implode( MAIN_DELIMITER, $data );
+        } else {
+            $this->_fValue = $data;
+        }    
         
         $this->_fValue = trim($this->_fValue);        
     }
@@ -62,7 +69,15 @@ class Form extends Request{
         
         return $var;
     }
-        
+    
+    /**
+     * Set Rule
+     * 
+     * @param String $param For example: minlength, maxlength, required, etc.
+     * @return \Form The same object
+     * 
+     * @access private
+     */
     private function _setRule( $param ){
         $val = '';
         preg_match( '/(?<param>\w+)\[(?<val>[\w\,\s]+)\]$/', $param, $matches);
@@ -108,7 +123,16 @@ class Form extends Request{
 
         return $this;
     }
-        
+      
+    /**
+     * Validate string
+     * 
+     * @param String $name  According to this variable we can find out $_POST[$name]
+     * @param String $label Use it for errors
+     * @param Type $type    Use it for filter string
+     * @param String $rules Looks like 'minlength[5]|maxlength[10]|required'
+     * @return String Value
+     */
     public function validate( $name, $label, $type, $rules = '' ){
         $this->_fLabel = $label;
         $this->_fName = $name;

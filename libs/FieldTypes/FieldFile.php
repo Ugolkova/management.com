@@ -9,15 +9,14 @@ class FieldFile extends FieldType {
     
     /**
      * Render form element
-     * @param array $data
-     * @return string
-     */
+     * 
+     * @param Array $data
+     * @return Array Contains keys ['label', 'instruction', 'tag']
+     */    
     public function render($data){
-        $element = $this->_setLabel($data['label'], $data['required']);
-        $element .= '<input type="file" name="field_' . $data['id'] . '" value="" '. $this->_isRequired($data['required']) .' />';
-        if(isset($data['value'])){
-            $element .= '<a href="' . $data['value'] . '" title="Link" target="_blank">Download File</a>';
-        }
+        $element['label'] = '';
+        $element['instruction'] = '';
+        $element['tag'] = '';
         
         return $element;
     }

@@ -1,7 +1,16 @@
 <?php
 
 class FieldTypeFactory {
-
+    
+    /**
+     * Builds new Object according to Field Type
+     * 
+     * @param String $fieldType Field Type
+     * 
+     * @return Object New field 
+     * 
+     * @throws Exception
+     */
     public static function build($fieldType){
         $className = "Field" . ucfirst(strtolower($fieldType));
         $filePath = LIBS . "FieldTypes/" . $className . ".php";

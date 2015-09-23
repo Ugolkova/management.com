@@ -6,6 +6,10 @@ class Login_model extends Model{
         parent::__construct();
     }
 
+    /**
+     * Run login
+     * 
+     */
     public function run(){
         try{
             $this->form = new Form();

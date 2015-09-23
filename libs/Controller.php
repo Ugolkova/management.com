@@ -12,6 +12,12 @@ class Controller {
         }
     }
     
+    /**
+     * Load model according to name and 
+     * 
+     * @param String $name
+     * @param String $modelPath
+     */
     public function loadModel($name, $modelPath = "models/"){
         $file = $modelPath . $name . "_model.php";
         if(file_exists($file)){
@@ -20,11 +26,10 @@ class Controller {
             $this->model = new $modelName();
         } 
     }
-    
-    protected function _getMessage(){
-        return array('error' => $this->_errorMessage, 'success' => $this->_successMessage);
-    }
 
+    /**
+     * Delete entries
+     */
     public function delete(){
         if( isset( $_POST['submit_action'] ) ){
             // Check POST data
@@ -65,6 +70,11 @@ class Controller {
         }
     }
     
+    /**
+     * Search entries
+     * 
+     * @return String JSON encoded string
+     */
     public function search(){
         if(method_exists( $this, 'get_entries' ) ){
             $list = $this->get_entries();

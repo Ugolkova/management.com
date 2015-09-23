@@ -1,9 +1,2 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>404 - Error</title>
-    </head>
-    <body>
-        <h1>404 - Error</h1>
-    </body>
-</html>
+<link rel="stylesheet" type="text/css" href="<?php echo URL; ?>public/css/error/default.css" />
+<script src="<?php echo URL; ?>public/js/error/default.js"></script>

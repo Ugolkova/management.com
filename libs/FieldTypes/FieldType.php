@@ -10,12 +10,14 @@ abstract class FieldType {
     /**
      * Set field options
      * 
-     * @param string $label
-     * @param string $short_name
-     * @param string $value
-     * @param boolean $required
-     * @param string $instruction
-     * @param boolean $validate
+     * @paramstring    $label          Label   
+     * @param string    $short_name     Short name  
+     * @param string    $value          Value
+     * @param boolean   $required       Is required
+     * @param string    $instruction    Instruction
+     * @param boolean   $validate       Validate 
+     * 
+     * @access protected
      */
     protected function _setOptions($label, $short_name, $value = '', $required = FALSE, $instruction = '', $validate = FALSE){
         $this->_options[] = array(
@@ -28,57 +30,46 @@ abstract class FieldType {
         );
     }    
     
+    /**
+     * Get options array which contains all the settings
+     * 
+     * @return Array Options array
+     */
     public function getOptions(){
         return $this->_options;
     }
 
-    public function getOptionsToValidate(){
-        $options = [];
-        foreach( $this->_options as $option ){
-            if( $option['validate'] ){
-                $options[] = $option['label'];
-            }
-        }
-    }    
-    
+    /**
+     * Render form element
+     * 
+     * @param Array $data
+     * 
+     * @return Array Contains keys ['label', 'instruction', 'tag']
+     */    
     abstract function render($data);
 
     /**
      * Render label in right style
-     * @param string $value
-     * @return string
+     * 
+     * @param String    $value      Value
+     * @param Boolean   $required   Is required
+     * 
+     * @return String Element <label>
      */
-    protected function _setLabel($value, $required){
-        return '<label class="' . ($required == true ? 'required' : '') . '">' . 
+    protected function _setLabel( $value, $required ){
+        return '<label class="' . ( $required == true ? 'required' : '' ) . '">' . 
                 $value . '</label>';
     }
     
     /**
      * Get required attribute for element
-     * @param boolean $value
+     * 
+     * @param Boolean $value TRUE or FALSE 
      * @return string
      */
-    protected function _isRequired($value){
-        return $value == true ? 'required' : '';
+    protected function _isRequired( $value ){
+        return $value === TRUE ? 'required' : '';
     }
     
-    public function addField(){
-        $data['field_name'] = $_POST['field_name'];
-        $data['field_name'] = $_POST['field_name'];
-        $data['field_name'] = $_POST['field_name'];
-        $data['field_name'] = $_POST['field_name'];
-        $data['field_name'] = $_POST['field_name'];
-        $data['field_name'] = $_POST['field_name'];
-        
-        $this->db->insert("fields", $data);
-    }
-    
-    public function updateField($data){
-        
-    }
-    
-    public function deleteField($fieldId){
-        
-    }
 }
 

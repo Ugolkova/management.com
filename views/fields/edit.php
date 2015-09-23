@@ -1,14 +1,6 @@
-<script>
-$(document).ready(function(){
-    $('select[name*=field_type]').change(function(){
-        var fieldType = $(this).val();
-        var fieldId = $(this).closest('table').find('input[name*=field_id]').val();
-        console.log(fieldId);
-        $('.fieldOptions[data-field-id='+ fieldId + ']').fadeOut(0);
-        $('.ft_' + fieldType + '[data-field-id='+ fieldId + ']').fadeIn(50);
-    }).change();
-});    
-</script>
+<a href="<?php echo URL; ?>fields/add" class="button add">Add Field</a>
+
+<script src="<?php echo URL; ?>public/js/fields/edit.js"></script>
 
 <form action="<?php echo URL; ?>fields/edit/<?php echo ( ($this->fieldId !== NULL) ? $this->fieldId . '/' : '' ) ; ?>" method="POST" class="publishForm fieldsForm">
     <input type="hidden" name="token" value="<?php echo $this->token; ?>" />
