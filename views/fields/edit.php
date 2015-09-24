@@ -30,7 +30,7 @@
 
             <tr>
                 <td><label class="required">Field Label</label></td>
-                <td><input type="text" name="field_label[<?php echo $k; ?>]" value="<?php echo $field['field_label']; ?>" class="<?php echo $this->isErrorField("field_label[$k]") ? 'error' : ''; ?>" /></td>
+                <td><input type="text" name="field_label[<?php echo $k; ?>]" value="<?php echo $field['field_label']; ?>" class="<?php echo $this->isErrorField("field_label[$k]") ? 'error' : ''; ?>" required /></td>
             </tr>
             <tr>
                 <td><label>Field Instructions</label></td>
@@ -75,7 +75,7 @@
 
                         <input type="text" name="<?php echo $option['short_name'] ?>[<?php echo $k; ?>]" 
                                value="<?php echo (isset($field['field_settings'][$option['short_name']]) ? 
-                               $field['field_settings'][$option['short_name']] : ''); ?>" class="<?php echo $this->isErrorField( $option['short_name'] . "[$k]") ? 'error' : ''; ?>" /></td>
+                               $field['field_settings'][$option['short_name']] : ''); ?>" class="<?php echo $this->isErrorField( $option['short_name'] . "[$k]") ? 'error' : ''; ?>" data-required="<?php echo $option['required']; ?>" /></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>    

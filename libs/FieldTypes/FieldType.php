@@ -68,7 +68,7 @@ abstract class FieldType {
      * @return string
      */
     protected function _isRequired( $value ){
-        return $value === TRUE ? 'required' : '';
+        return $value == TRUE ? 'required' : '';
     }
     
 }

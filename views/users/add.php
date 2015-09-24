@@ -18,19 +18,19 @@
             <!-- Standard User Data -->
             <tr>
                 <td><label class="required">User Name</label></td>
-                <td><input type="text" name="user_name" value="<?php echo $this->user['user_name']; ?>" class="<?php echo $this->isErrorField("user_name") ? 'error' : ''; ?>" /></td>
+                <td><input type="text" name="user_name" value="<?php echo $this->user['user_name']; ?>" class="<?php echo $this->isErrorField("user_name") ? 'error' : ''; ?>" required /></td>
             </tr>
             <tr>
                 <td><label class="required">User Login</label></td>
-                <td><input type="text" name="user_login" value="<?php echo $this->user['user_login']; ?>" class="<?php echo $this->isErrorField("user_login") ? 'error' : ''; ?>" /></td>
+                <td><input type="text" name="user_login" value="<?php echo $this->user['user_login']; ?>" class="<?php echo $this->isErrorField("user_login") ? 'error' : ''; ?>" required /></td>
             </tr>
             <tr>
                 <td><label class="required">User Email</label></td>
-                <td><input type="text" name="user_email" value="<?php echo $this->user['user_email']; ?>" class="email <?php echo $this->isErrorField("user_email") ? 'error' : ''; ?>" /></td>
+                <td><input type="text" name="user_email" value="<?php echo $this->user['user_email']; ?>" class="email <?php echo $this->isErrorField("user_email") ? 'error' : ''; ?>" required /></td>
             </tr>
             <tr>
                 <td><label class="required">User Skype</label></td>
-                <td><input type="text" name="user_skype" value="<?php echo $this->user['user_skype']; ?>" class="<?php echo $this->isErrorField("user_skype") ? 'error' : ''; ?>" /></td>
+                <td><input type="text" name="user_skype" value="<?php echo $this->user['user_skype']; ?>" class="<?php echo $this->isErrorField("user_skype") ? 'error' : ''; ?>" required /></td>
             </tr>
             <?php if( Session::get('user_type') === 'admin' ): ?>
             <tr>

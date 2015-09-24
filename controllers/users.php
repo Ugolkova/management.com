@@ -162,7 +162,7 @@ class Users extends Controller implements CRUD{
 
         $u_fields = [];
         $fields_data = $this->model->getFieldsData();
-                
+          
         if( isset( $_POST['submit'] ) ){
             $user = $this->_validateData();
             // If we have any validation errors we can save data
@@ -176,16 +176,11 @@ class Users extends Controller implements CRUD{
                     header( "location: " . URL . "users/get_entries/" );
                 }
             } else {
-                Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
                 Session::set( 'msg_error', $this->form->errorMessages );
-                $this->view->token = Session::get( 'token' );  
                 $this->view->setErrorFields( $this->form->errorFields );
             }            
             
         } else {  
-            Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
-            $this->view->token = Session::get( 'token' );  
-            
             $user = array(
                 'owner_id' => Session::get( 'user_id' ),
                 'user_login' => '',
@@ -206,6 +201,9 @@ class Users extends Controller implements CRUD{
             $u_fields[] = $u_field->render($f_data); 
         }
 
+        Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
+        $this->view->token = Session::get( 'token' );  
+        
         $this->view->user_fields = $u_fields;            
         
         $this->view->setTitle("Add User" );
@@ -238,13 +236,15 @@ class Users extends Controller implements CRUD{
             $msg_success = [];
             $msg_error = [];    
             $errorMessages = [];
+            $errorFields = [];
 
             $countEntries = COUNT($_POST['user_id']);
             for( $i = 0; $i < $countEntries; $i++ ){
-                $this->form->errorMessages = array();
+                $this->form->errorMessages = [];
+                $this->form->errorFields = [];
                 
                 $user = $this->_validateData( $i );
-                                
+                
                 // If we have any validation errors we can save data
                 if( empty( $this->form->errorMessages ) ){
                     try{
@@ -255,6 +255,7 @@ class Users extends Controller implements CRUD{
                     }
                 } else {
                     $errorMessages = array_merge( $errorMessages, $this->form->errorMessages );
+                    $errorFields = array_merge( $errorFields, $this->form->errorFields );
                 }
                
                 if( $user['owner_id'] != Session::get('user_id') ){ 
@@ -265,10 +266,9 @@ class Users extends Controller implements CRUD{
             }            
                         
             $fieldsErrors = array_keys( array_flip( $errorMessages ) );
-            
-            if( !empty( $fieldsErrors ) ){
-                $this->view->setErrorFields( $this->form->errorFields );
-            }    
+            if( !empty( $errorFields ) ){
+                $this->view->setErrorFields( $errorFields );
+            }
             
             Session::set( 'msg_success', $msg_success );
             Session::set( 'msg_error', $fieldsErrors ); 
@@ -311,7 +311,14 @@ class Users extends Controller implements CRUD{
                 $u_field = FieldTypeFactory::build($f_data['field_type']);
                 $f_data['field_name'] = 'field_' . $f_data['field_id'] . 
                                         '[' . $k . ']';
-                $u_fields[] = $u_field->render($f_data); 
+                
+                // Set error
+                if( !empty( $errorFields ) && 
+                        in_array( $f_data['field_name'], $errorFields ) ){
+                    $f_data['field_error'] = TRUE;
+                }    
+
+                $u_fields[] = $u_field->render($f_data);
             }
 
             $this->view->user_fields[$k] = $u_fields;   

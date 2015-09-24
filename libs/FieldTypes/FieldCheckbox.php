@@ -5,7 +5,7 @@ class FieldCheckbox extends FieldType {
     function __construct() {
         parent::__construct();
         
-        $this->_setOptions('Options', 'options', '', FALSE, 'Use following ' .
+        $this->_setOptions('Options', 'ch_options', '', FALSE, 'Use following ' .
                 'sign <b>"' . MAIN_DELIMITER . '"</b> to separate items');
     }
     

@@ -248,11 +248,11 @@ class Users_model extends Model {
             unset( $user['user_id'] );
         }
 
-        if( isset( $user['user_name'] ) ){
+        if( isset( $user['user_name'] ) && $user_id === NULL ){
             $existingUser = $this->getEntry( NULL, $user['user_name'] );  
-        
+            
             if( $existingUser ){
-                throw new Exception( 'User <a href="' . URL . 'users/edit/' . $existingUser['user_id'] . '">' . $existingUser['user_name'] . '</a> already exists' );
+                throw new Exception( 'User <a href="' . URL . 'users/edit/' . $existingUser[0]['user_id'] . '/">' . $existingUser[0]['user_name'] . '</a> already exists' );
             }
         }
         

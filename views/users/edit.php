@@ -21,22 +21,22 @@
             <tr>
                 <td><label class="required">User Name</label></td>
                 <td>
-                    <input type="text" name="user_name[<?php echo $k; ?>]" value="<?php echo $user['user_name']; ?>" class="<?php echo $this->isErrorField("user_name[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?>/>
+                    <input type="text" name="user_name[<?php echo $k; ?>]" value="<?php echo $user['user_name']; ?>" class="<?php echo $this->isErrorField("user_name[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?> required />
                 </td>
             </tr>
             <tr>
                 <td><label class="required">User Login</label></td>
                 <td>
-                    <input type="text" name="user_login[<?php echo $k; ?>]" value="<?php echo $user['user_login']; ?>" class="<?php echo $this->isErrorField("user_login[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?>/>
+                    <input type="text" name="user_login[<?php echo $k; ?>]" value="<?php echo $user['user_login']; ?>" class="<?php echo $this->isErrorField("user_login[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?> required />
                 </td>
             </tr>
             <tr>
                 <td><label class="required">User Email</label></td>
-                <td><input type="text" name="user_email[<?php echo $k; ?>]" value="<?php echo $user['user_email']; ?>" class="email <?php echo $this->isErrorField("user_email[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?>/></td>
+                <td><input type="text" name="user_email[<?php echo $k; ?>]" value="<?php echo $user['user_email']; ?>" class="email <?php echo $this->isErrorField("user_email[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?> required /></td>
             </tr>
             <tr>
                 <td><label class="required">User Skype</label></td>
-                <td><input type="text" name="user_skype[<?php echo $k; ?>]" value="<?php echo $user['user_skype']; ?>" class="<?php echo $this->isErrorField("user_skype[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?>/></td>
+                <td><input type="text" name="user_skype[<?php echo $k; ?>]" value="<?php echo $user['user_skype']; ?>" class="<?php echo $this->isErrorField("user_skype[$k]") ? 'error' : ''; ?>" <?php echo $this->disabledStandardFields[$k]; ?> required /></td>
             </tr>
 
             <?php if( Session::get('user_type') === 'admin' ): ?>

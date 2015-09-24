@@ -56,6 +56,13 @@ $(document).ready(function(){
             }
         });
         
+        if( actionVal == 'delete' ){
+            if( $('input:disabled').length ){
+                $('input[name=check_all]').removeAttr('checked');
+                $('input:disabled').prop('checked', false);
+            }
+        }
+        
     });
     
     if( $('.message').length ){
@@ -111,7 +118,10 @@ $(document).ready(function(){
             data: {count: count},
             url: '/index/changeEntriesCount/',
             success: function(data){
-                location.reload();
+                window.location = window.location.href
+                                                 .split("/")
+                                                 .splice(0, 5)
+                                                 .join("/") + '/';
             },
             error: function(){
                 console.log( 'Can\'t change entries count.' );
@@ -119,9 +129,17 @@ $(document).ready(function(){
         });
     });
     
-    $('form').submit(function(){
+    $('input, textarea').keyup(function(){
+        if( $(this).is(':required') && $(this).val() === '' ){
+            $(this).addClass('error');
+        } else {
+            $(this).removeClass('error');
+        }
+    });
+    
+    $('form').submit(function(){        
         if( $('input[name=submit_action]').length ){
-            if( $('select[name=action]').val() == 'delete' ){
+            if( $('select[name=action]').val() == 'delete' ){                
                 var entriesToRemove = new Array();
                 entriesToRemove.push( $(this).closest('form')
                                           .find('tbody')
@@ -133,9 +151,16 @@ $(document).ready(function(){
                 console.log(entriesToRemove);
                 if( !confirm('You are going to remove entries: \t' + entriesToRemove) ){
                     return false;
-                }
+                }                    
             }
         }
+        
+        if( $('input[name=submit]').length ){
+            if( $('input.error').length + $('textarea.error').length ){
+                alert('You have error fields');
+                return false;
+            }
+        }      
     });
     
 });
