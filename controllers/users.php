@@ -6,7 +6,7 @@
  * don't forget we must implement all the methods of interface CRUD
  */
 class Users extends Controller implements CRUD{
-    private $_userTypes = array("lm", "pm");
+    private $_userTypes = array("lm", "pm", "my");
     
     function __construct() {
         parent::__construct();
@@ -168,6 +168,9 @@ class Users extends Controller implements CRUD{
             // If we have any validation errors we can save data
             if( empty( $this->form->errorMessages ) ){
                 try{
+                    $user['user_password'] = Hash::create( 'sha256', 
+                                                           'test', 
+                                                            HASH_PASSWORD_KEY );
                     $user_id = $this->model->save( $user );
                     Session::set( 'msg_success', "User successfully added" );
                     header( "location: " . URL . "users/edit/" . $user_id );

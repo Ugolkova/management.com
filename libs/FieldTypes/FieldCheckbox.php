@@ -22,9 +22,9 @@ class FieldCheckbox extends FieldType {
         $element['tag'] .= "<div>";
         
         $data['field_value'] = explode( MAIN_DELIMITER, $data['field_value']);
-        
-        if(!empty($data['field_settings']['options'])){
-            foreach($data['field_settings']['options'] as $option){
+                
+        if(!empty($data['field_settings']['ch_options'])){
+            foreach($data['field_settings']['ch_options'] as $option){
                 $option = trim( $option );
                 $element['tag'] .= '<input type="checkbox" name="' . $data['field_name'] . '[]" value="' . $option . '"'; 
                 if( in_array( $option, $data['field_value'] ) ){

@@ -1,3 +1,5 @@
+<script src="<?php echo URL; ?>public/js/users/list.js"></script>
+
 <a href="<?php echo URL; ?>users/add" class="button add">Add User</a>
 
 <form action="<?php echo URL; ?>users/search/" class="searchForm">
@@ -8,10 +10,11 @@
 
         <div class="clear"></div>
         <b>User Group</b>
-        <select>
-            <option value="list">All Users</option>
-            <option value="lm_list">LM Users</option>
-            <option value="pm_list">PM Users</option>
+        <select name="users_type">
+            <option value="">All Users</option>
+            <option value="my">My Users</option>
+            <option value="lm">LM Users</option>
+            <option value="pm">PM Users</option>
         </select>
 
         <select name="results_count">

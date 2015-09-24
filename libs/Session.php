@@ -35,7 +35,7 @@ class Session{
      */
     public static function set( $name, $value ){
         if( $name !== 'token' || 
-            ( $name === 'token' && !isset( $_SESSION['token'] ) ) ){
+            ( $name === 'token' && (!isset( $_SESSION['token'] ) || $_SESSION['token'] == '' ) ) ){
             $_SESSION[$name] = $value;
         }    
     }

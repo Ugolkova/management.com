@@ -144,6 +144,14 @@ class Fields extends Controller implements CRUD{
             $field_settings['options'] = $options;
         }            
 
+        if( isset($field_settings['ch_options']) ){
+            $ch_options = explode(MAIN_DELIMITER, $field_settings['ch_options']);
+            foreach($ch_options as &$option){
+                $option = trim( $option );
+            }
+            $field_settings['ch_options'] = $ch_options;
+        }         
+        
         $field['field_settings'] = serialize($field_settings);
         
         return $field;
@@ -182,7 +190,13 @@ class Fields extends Controller implements CRUD{
                 $field['field_settings']['options'] = 
                         implode( MAIN_DELIMITER, 
                                  $field['field_settings']['options'] );
-            }    
+            } 
+            
+            if( isset( $field['field_settings']['ch_options'] ) ){
+                $field['field_settings']['ch_options'] = 
+                        implode( MAIN_DELIMITER, 
+                                 $field['field_settings']['ch_options'] );
+            } 
         } else {  
             Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );
             $this->view->token = Session::get( 'token' );  
@@ -294,6 +308,12 @@ class Fields extends Controller implements CRUD{
                     $field['field_settings']['options'] = 
                             implode( MAIN_DELIMITER, 
                                      $field['field_settings']['options'] );
+                }
+                
+                if( isset( $field['field_settings']['ch_options'] ) ){
+                    $field['field_settings']['ch_options'] = 
+                            implode( MAIN_DELIMITER, 
+                                     $field['field_settings']['ch_options'] );
                 }
 
                 if( $field ){

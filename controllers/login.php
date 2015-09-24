@@ -13,9 +13,7 @@ class Login extends Controller {
      */
     function index(){
         Session::init();
-        if( !Session::get( 'token' ) ){
-            Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );            
-        }
+        Session::set( 'token', md5( uniqid( mt_rand(), true ) ) );            
         $this->view->token = Session::get( 'token' );
         $this->view->render("login/index");
     }

@@ -26,6 +26,10 @@ class Users_model extends Model {
                     $where .= " AND t1.user_is_pm = TRUE";
                     
                     break;
+                case "my":
+                    $where .= " AND t1.owner_id = " . Session::get('user_id');
+                    
+                    break;
                 default:
                     break;
             }
@@ -34,7 +38,7 @@ class Users_model extends Model {
         if( $this->searchKey !== '' ){
             $where .= " AND t1.user_name LIKE '%" . $this->searchKey . "%'";
         }
-                
+         
         $countEntries = COUNT_ENTRIES_ON_PAGE;
         if( Session::get('COUNT_ENTRIES_ON_PAGE') ){
             $countEntries = Session::get('COUNT_ENTRIES_ON_PAGE');
@@ -47,7 +51,7 @@ class Users_model extends Model {
         } else {
             $limit .= $countEntries;
         }
-                
+                   
         $sql = "SELECT t1.user_id, t1.user_name, t1.user_email, t1.user_skype, t1.owner_id,  
             t6.avatar_path, t2.lm_id, t3.user_name as lm_name, 
             t4.pm_id, t5.user_name as pm_name, t7.user_name as owner_name 
